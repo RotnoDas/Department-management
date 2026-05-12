@@ -1,0 +1,49 @@
+{
+  "name": "cse-department-management",
+  "private": true,
+  "version": "1.0.0",
+  "description": "CSE Department Management System - Single department management for students, teachers, and employees",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n FE,BE -c cyan,green \"vite\" \"node --disable-warning=ExperimentalWarning --watch server/index.js\"",
+    "dev:frontend": "vite",
+    "dev:backend": "node --disable-warning=ExperimentalWarning --watch server/index.js",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "seed": "node --disable-warning=ExperimentalWarning server/database/seed.js"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "axios": "^1.16.0",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.3",
+    "lucide-react": "^1.14.0",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "react-router": "^7.14.2",
+    "react-toastify": "^11.1.0",
+    "recharts": "^3.8.1",
+    "tailwindcss": "^4.2.4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "daisyui": "^5.5.19",
+    "eslint": "^10.2.1",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.5.0",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "vite": "^8.0.10"
+  }
+}
