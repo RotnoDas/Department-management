@@ -141,172 +141,175 @@ export default function TeacherCourseMaterials() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Upload Form Sidebar */}
-        <div className="lg:col-span-1">
-          <div className="card sticky top-24 overflow-hidden border border-slate-200 bg-white shadow-xl">
-            <div className="h-2 w-full bg-gradient-to-r from-sky-400 to-blue-600"></div>
-            <div className="card-body p-6">
-              <h2 className="card-title mb-6 flex items-center gap-3 text-xl font-bold text-slate-800">
-                <div className="rounded-lg bg-sky-100 p-2 text-sky-600 shadow-inner">
-                  <Upload className="h-5 w-5" />
-                </div>
-                Upload New
-              </h2>
-              <form onSubmit={handleUpload} className="space-y-4">
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold text-slate-700">
-                      Material Title
-                    </span>
-                  </label>
-                  <input
-                    type="text"
-                    className="input input-bordered focus:ring-primary/20 w-full bg-slate-50/50 focus:ring-2"
-                    placeholder="e.g., Lecture 1 Notes"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold text-slate-700">
-                      Description / Content (Optional)
-                    </span>
-                  </label>
-                  <textarea
-                    className="textarea textarea-bordered focus:ring-primary/20 h-28 w-full bg-slate-50/50 focus:ring-2"
-                    placeholder="Add notes, links, or context here..."
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  ></textarea>
-                </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold text-slate-700">
-                      Select File (Optional)
-                    </span>
-                  </label>
-                  <input
-                    id="file-upload"
-                    type="file"
-                    className="file-input file-input-bordered file-input-primary w-full bg-slate-50/50"
-                    onChange={(e) => setFile(e.target.files[0])}
-                  />
-                  <label className="label">
-                    <span className="label-text-alt font-medium text-slate-500">
-                      PDF, DOCX, JPG, ZIP, etc.
-                    </span>
-                  </label>
-                </div>
-                <button
-                  type="submit"
-                  className="btn btn-primary mt-4 w-full shadow-md"
-                  disabled={uploading || (!file && !description) || !title}
-                >
-                  {uploading ? (
-                    <span className="loading loading-spinner"></span>
-                  ) : (
-                    "Publish Material"
-                  )}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-
-        {/* Materials List */}
-        <div className="lg:col-span-2">
-          {materials.length === 0 ? (
-            <div className="card group relative overflow-hidden border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-slate-50 to-white"></div>
-              <div className="card-body relative z-10 min-h-[300px] items-center justify-center">
-                <div className="mb-6 rounded-full bg-slate-100 p-5 shadow-inner ring-4 ring-slate-50 transition-all duration-300 group-hover:scale-110">
-                  <File className="h-12 w-12 animate-pulse text-sky-400" />
-                </div>
-                <h3 className="mb-2 text-2xl font-bold text-slate-700">
-                  No Materials Uploaded
-                </h3>
-                <p className="mx-auto max-w-sm leading-relaxed text-slate-500">
-                  Upload a file or write a note from the sidebar to get started
-                  and share resources with your students.
-                </p>
+      <div className="rounded-3xl border border-slate-200 bg-white/50 p-6 shadow-sm backdrop-blur-sm lg:p-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          {/* Upload Form Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="card sticky top-24 overflow-hidden border border-slate-200 bg-white shadow-xl">
+              <div className="h-2 w-full bg-gradient-to-r from-indigo-500 to-violet-600"></div>
+              <div className="card-body p-6">
+                <h2 className="card-title mb-6 flex items-center gap-3 text-xl font-bold text-slate-800">
+                  <div className="rounded-lg bg-indigo-100 p-2 text-indigo-600 shadow-inner">
+                    <Upload className="h-5 w-5" />
+                  </div>
+                  Upload New
+                </h2>
+                <form onSubmit={handleUpload} className="space-y-4">
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold text-slate-700">
+                        Material Title
+                      </span>
+                    </label>
+                    <input
+                      type="text"
+                      className="input input-bordered w-full bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/20"
+                      placeholder="e.g., Lecture 1 Notes"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold text-slate-700">
+                        Description / Content (Optional)
+                      </span>
+                    </label>
+                    <textarea
+                      className="textarea textarea-bordered h-28 w-full bg-slate-50/50 focus:ring-2 focus:ring-indigo-500/20"
+                      placeholder="Add notes, links, or context here..."
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                    ></textarea>
+                  </div>
+                  <div className="form-control">
+                    <label className="label">
+                      <span className="label-text font-semibold text-slate-700">
+                        Select File (Optional)
+                      </span>
+                    </label>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      className="file-input file-input-bordered file-input-primary w-full bg-slate-50/50"
+                      onChange={(e) => setFile(e.target.files[0])}
+                    />
+                    <label className="label">
+                      <span className="label-text-alt font-medium text-slate-500">
+                        PDF, DOCX, JPG, ZIP, etc.
+                      </span>
+                    </label>
+                  </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary mt-4 w-full border-0 bg-indigo-600 text-white shadow-md transition-all hover:bg-indigo-700 hover:shadow-lg"
+                    disabled={uploading || (!file && !description) || !title}
+                  >
+                    {uploading ? (
+                      <span className="loading loading-spinner"></span>
+                    ) : (
+                      "Publish Material"
+                    )}
+                  </button>
+                </form>
               </div>
             </div>
-          ) : (
-            <div className="space-y-6">
-              {materials.map((m) => (
-                <div
-                  key={m.id}
-                  className="card group border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
-                >
-                  <div className="card-body gap-4 p-6">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                      <div className="flex flex-1 items-center gap-4">
-                        <div className="rounded-xl bg-slate-100 p-3 shadow-inner transition-transform group-hover:scale-110">
-                          {m.file_path ? (
-                            getFileIcon(m.original_name)
-                          ) : (
-                            <FileText className="h-8 w-8 text-sky-500" />
-                          )}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <h3 className="text-xl font-bold text-slate-800">
-                            {m.title}
-                          </h3>
-                          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-                            {m.file_path && (
-                              <>
-                                <span
-                                  className="max-w-[200px] truncate rounded bg-slate-100 px-2 py-1"
-                                  title={m.original_name}
-                                >
-                                  {m.original_name}
-                                </span>
-                                <span>•</span>
-                              </>
+          </div>
+
+          {/* Materials List */}
+          <div className="lg:col-span-2">
+            {materials.length === 0 ? (
+              <div className="card group relative overflow-hidden border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
+                <div className="absolute inset-0 -z-10 bg-gradient-to-br from-slate-50 to-white"></div>
+                <div className="card-body relative z-10 min-h-[300px] items-center justify-center">
+                  <div className="mb-6 rounded-full bg-slate-100 p-5 shadow-inner ring-4 ring-slate-50 transition-all duration-300 group-hover:scale-110">
+                    <File className="h-12 w-12 animate-pulse text-indigo-400" />
+                  </div>
+                  <h3 className="mb-2 text-2xl font-bold text-slate-700">
+                    No Materials Uploaded
+                  </h3>
+                  <p className="mx-auto max-w-sm leading-relaxed text-slate-500">
+                    Upload a file or write a note from the sidebar to get
+                    started and share resources with your students.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {materials.map((m) => (
+                  <div
+                    key={m.id}
+                    className="card group flex flex-col border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    <div className="h-2 w-full rounded-t-2xl bg-gradient-to-r from-indigo-400 to-violet-500 opacity-80 transition-opacity group-hover:opacity-100"></div>
+                    <div className="card-body gap-4 p-6 sm:p-8">
+                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                        <div className="flex flex-1 items-center gap-4">
+                          <div className="rounded-xl bg-slate-50 p-3 shadow-inner transition-transform group-hover:scale-110">
+                            {m.file_path ? (
+                              getFileIcon(m.original_name)
+                            ) : (
+                              <FileText className="h-8 w-8 text-indigo-500" />
                             )}
-                            <span className="rounded bg-sky-50 px-2 py-1 text-sky-700">
-                              {formatDate(m.created_at)}
-                            </span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="line-clamp-2 text-xl leading-snug font-bold text-slate-800">
+                              {m.title}
+                            </h3>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
+                              {m.file_path && (
+                                <>
+                                  <span
+                                    className="max-w-[200px] truncate rounded bg-slate-100 px-2 py-1"
+                                    title={m.original_name}
+                                  >
+                                    {m.original_name}
+                                  </span>
+                                  <span>•</span>
+                                </>
+                              )}
+                              <span className="rounded bg-indigo-50 px-2 py-1 text-indigo-700">
+                                {formatDate(m.created_at)}
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center justify-end gap-2 sm:self-start">
-                        {m.file_path && (
-                          <a
-                            href={`http://localhost:3001${m.file_path}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="btn btn-outline btn-info btn-sm shadow-sm hover:text-white"
-                            title="Download"
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-2 sm:self-start">
+                          {m.file_path && (
+                            <a
+                              href={`http://localhost:3001${m.file_path}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn btn-primary btn-sm border-0 bg-indigo-600 text-white shadow-md transition-all hover:bg-indigo-700 hover:shadow-lg"
+                              title="Download"
+                            >
+                              <Download className="mr-1 h-4 w-4" /> Download
+                            </a>
+                          )}
+                          <button
+                            onClick={() => handleDelete(m.id)}
+                            className="btn btn-square btn-ghost btn-sm hover:bg-error/10 hover:text-error text-slate-400"
+                            title="Delete Material"
                           >
-                            <Download className="h-4 w-4" /> Download
-                          </a>
-                        )}
-                        <button
-                          onClick={() => handleDelete(m.id)}
-                          className="btn btn-square btn-ghost btn-sm hover:bg-error/10 hover:text-error text-slate-400"
-                          title="Delete Material"
-                        >
-                          <Trash2 className="h-5 w-5" />
-                        </button>
+                            <Trash2 className="h-5 w-5" />
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Description Block */}
-                    {m.description && (
-                      <div className="mt-2 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm leading-relaxed whitespace-pre-wrap text-slate-600 shadow-inner">
-                        {m.description}
-                      </div>
-                    )}
+                      {/* Description Block */}
+                      {m.description && (
+                        <div className="mt-2 flex-1 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm leading-relaxed whitespace-pre-wrap text-slate-600 shadow-inner">
+                          {m.description}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -64,9 +64,9 @@ export default function StudentCourseMaterials() {
   return (
     <div className="page-transition mx-auto max-w-5xl space-y-8 pb-10">
       {/* Impressive Header matching the Theme */}
-      <div className="card relative overflow-hidden bg-gradient-to-br from-indigo-500 via-blue-600 to-sky-600 text-white shadow-xl">
+      <div className="card relative overflow-hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 text-white shadow-xl">
         <div className="absolute top-0 right-0 -mt-10 -mr-10 h-48 w-48 rounded-full bg-white opacity-10 blur-2xl"></div>
-        <div className="absolute bottom-0 left-10 -mb-10 h-32 w-32 rounded-full bg-sky-300 opacity-20 blur-xl"></div>
+        <div className="absolute bottom-0 left-10 -mb-10 h-32 w-32 rounded-full bg-violet-400 opacity-20 blur-xl"></div>
         <div className="card-body relative z-10 p-8">
           <div className="flex flex-col gap-6 md:flex-row md:items-center">
             <Link
@@ -82,7 +82,7 @@ export default function StudentCourseMaterials() {
               </div>
               <div>
                 <h1 className="text-3xl font-extrabold tracking-tight drop-shadow-md">
-                  {courseCode} Materials
+                  {courseCode} - {courseName}
                 </h1>
                 <p className="mt-2 font-medium text-indigo-100">
                   Access notes, links, and resources shared by your faculty
