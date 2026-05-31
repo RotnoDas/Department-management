@@ -3,6 +3,11 @@ import express from "express";
 import cors from "cors";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import authRouter from "./routes/auth.js";
 import adminRouter from "./routes/admin.js";
@@ -30,6 +35,9 @@ app.use(
     cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 },
   }),
 );
+
+// Serve uploads folder for materials
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ── Routes ──────────────────────────────────────────────────
 app.use("/api/auth", authRouter);

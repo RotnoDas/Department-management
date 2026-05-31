@@ -100,6 +100,18 @@ db.exec(`
     author_id  INTEGER REFERENCES admins(id) ON DELETE SET NULL,
     created_at TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS course_materials (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_code   TEXT NOT NULL,
+    semester      INTEGER NOT NULL,
+    title         TEXT NOT NULL,
+    description   TEXT,
+    file_path     TEXT,
+    original_name TEXT,
+    teacher_id    INTEGER REFERENCES teachers(id) ON DELETE CASCADE,
+    created_at    TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 export default db;

@@ -241,9 +241,12 @@ export default function TeacherDashboard() {
                                     <CheckSquare className="mr-1 h-4 w-4" />{" "}
                                     Attendance
                                   </button>
-                                  <button className="btn btn-sm flex-1 border-0 bg-slate-50 text-slate-600 shadow-sm transition-colors hover:bg-slate-200">
+                                  <Link
+                                    to={`/teacher/courses/${course.courseCode}/materials`}
+                                    className="btn btn-sm flex-1 border-0 bg-slate-50 text-slate-600 shadow-sm transition-colors hover:bg-slate-200"
+                                  >
                                     <Files className="mr-1 h-4 w-4" /> Materials
-                                  </button>
+                                  </Link>
                                 </div>
                               </div>
                             </div>

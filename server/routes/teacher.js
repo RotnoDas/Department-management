@@ -1,8 +1,19 @@
 import express from "express";
+import multer from "multer";
+import path from "path";
 import db from "../database/db.js";
 import { verifyToken, requireRole } from "../middleware/auth.js";
 
 const router = express.Router();
+
+const storage = multer.diskStorage({
+  destination: "./server/uploads/",
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({ storage });
+
 router.use(verifyToken, requireRole("teacher"));
 
 router.get("/profile", (req, res) => {
@@ -60,6 +71,105 @@ router.get("/courses", (req, res) => {
     .all(teacher.id);
 
   res.json(courses);
+});
+// ── Course Materials ───────────────────────────────────────
+router.get("/courses/:courseCode/materials", (req, res) => {
+  const { courseCode } = req.params;
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  // Verify course belongs to teacher
+  const course = db
+    .prepare(
+      "SELECT id, course_name FROM courses WHERE course_code=? AND teacher_id=?",
+    )
+    .get(courseCode, teacher.id);
+  if (!course)
+    return res
+      .status(403)
+      .json({ error: "Access denied or course not found." });
+
+  const materials = db
+    .prepare(
+      "SELECT * FROM course_materials WHERE course_code=? AND teacher_id=? ORDER BY created_at DESC",
+    )
+    .all(courseCode, teacher.id);
+  res.json({
+    courseName: course.course_name,
+    materials,
+  });
+});
+router.post(
+  "/courses/:courseCode/materials",
+  upload.single("file"),
+  (req, res) => {
+    const { courseCode } = req.params;
+    const { title, description } = req.body;
+    if (!title) return res.status(400).json({ error: "Title is required." });
+
+    // File is now optional if they provided a description
+    if (!req.file && !description) {
+      return res
+        .status(400)
+        .json({ error: "You must provide either a file or a description." });
+    }
+
+    const teacher = db
+      .prepare("SELECT id FROM teachers WHERE user_id=?")
+      .get(req.user.userId);
+    if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+    // Verify course belongs to teacher
+    const course = db
+      .prepare(
+        "SELECT id, semester FROM courses WHERE course_code=? AND teacher_id=?",
+      )
+      .get(courseCode, teacher.id);
+    if (!course)
+      return res
+        .status(403)
+        .json({ error: "Access denied or course not found." });
+
+    const filePath = req.file ? `/uploads/${req.file.filename}` : null;
+    const originalName = req.file ? req.file.originalname : null;
+    db.prepare(
+      `
+    INSERT INTO course_materials (course_code, semester, title, description, file_path, original_name, teacher_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `,
+    ).run(
+      courseCode,
+      course.semester,
+      title,
+      description || null,
+      filePath,
+      originalName,
+      teacher.id,
+    );
+
+    res
+      .status(201)
+      .json({ success: true, message: "Material uploaded successfully." });
+  },
+);
+
+router.delete("/materials/:id", (req, res) => {
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  const result = db
+    .prepare("DELETE FROM course_materials WHERE id=? AND teacher_id=?")
+    .run(req.params.id, teacher.id);
+  if (result.changes === 0)
+    return res
+      .status(403)
+      .json({ error: "Access denied or material not found." });
+
+  res.json({ success: true, message: "Material deleted." });
 });
 
 export default router;

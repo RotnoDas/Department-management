@@ -65,4 +65,55 @@ router.get("/notices", (req, res) => {
   res.json(notices);
 });
 
+// ── Courses ────────────────────────────────────────────────
+router.get("/courses", (req, res) => {
+  const p = db
+    .prepare("SELECT semester FROM students WHERE user_id=?")
+    .get(req.user.userId);
+  if (!p) return res.status(404).json({ error: "Profile not found." });
+
+  const courses = db
+    .prepare(
+      `
+    SELECT c.course_code as courseCode, c.course_name as courseName, t.name as teacherName
+    FROM courses c
+    LEFT JOIN teachers t ON c.teacher_id = t.id
+    WHERE c.semester = ?
+  `,
+    )
+    .all(p.semester);
+
+  res.json(courses);
+});
+
+// ── Course Materials ───────────────────────────────────────
+router.get("/courses/:courseCode/materials", (req, res) => {
+  const { courseCode } = req.params;
+  const p = db
+    .prepare("SELECT semester FROM students WHERE user_id=?")
+    .get(req.user.userId);
+  if (!p) return res.status(404).json({ error: "Profile not found." });
+
+  // Verify course belongs to student's semester
+  const course = db
+    .prepare(
+      "SELECT id, course_name FROM courses WHERE course_code=? AND semester=?",
+    )
+    .get(courseCode, p.semester);
+  if (!course)
+    return res
+      .status(403)
+      .json({ error: "Access denied or course not found." });
+
+  const materials = db
+    .prepare(
+      "SELECT id, title, description, file_path as filePath, original_name as originalName, created_at as createdAt FROM course_materials WHERE course_code=? ORDER BY created_at DESC",
+    )
+    .all(courseCode);
+  res.json({
+    courseName: course.course_name,
+    materials,
+  });
+});
+
 export default router;

@@ -58,21 +58,31 @@ export default function AdminCourses() {
 
   return (
     <div className="page-transition space-y-8 pb-10">
-      {/* Impressive Header */}
-      <div className="card relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-700 text-white shadow-lg">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-48 w-48 rounded-full bg-white opacity-10 blur-2xl"></div>
-        <div className="absolute bottom-0 left-10 -mb-10 h-32 w-32 rounded-full bg-purple-300 opacity-20 blur-xl"></div>
-        <div className="card-body relative z-10 flex-row items-center gap-6 p-8">
-          <div className="rounded-2xl border border-white/30 bg-white/20 p-4 shadow-inner backdrop-blur-sm">
-            <BookOpen className="h-10 w-10 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-extrabold tracking-tight drop-shadow-md">
-              Course Distribution
-            </h1>
-            <p className="mt-2 font-medium text-indigo-100">
-              Manage and assign faculty members to courses by semester
-            </p>
+      {/* Header with Branded Courses Logo */}
+      <div className="card relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 text-white shadow-2xl">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0YzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6bTAtMTBjMC0yLjIxLTEuNzktNC00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
+        <div className="card-body relative z-10 flex-row items-center justify-between p-8">
+          <div className="flex items-center gap-8">
+            <div className="group relative">
+              <div className="flex h-20 w-20 transform items-center justify-center rounded-3xl border border-white/30 bg-white/20 shadow-2xl backdrop-blur-xl transition-transform duration-500 group-hover:rotate-6">
+                <BookOpen className="h-10 w-10 text-white drop-shadow-lg" />
+              </div>
+              <div className="absolute -right-2 -bottom-2 flex h-8 w-8 transform items-center justify-center rounded-xl border-2 border-white bg-green-400 text-indigo-900 shadow-lg transition-transform group-hover:scale-110">
+                <BookOpen className="h-4 w-4 font-bold" />
+              </div>
+            </div>
+
+            <div>
+              <h1 className="flex items-center gap-3 text-4xl font-black tracking-tight">
+                Course Distribution
+                <div className="badge badge-success badge-sm px-3 py-3 font-bold text-white uppercase shadow-lg">
+                  Active
+                </div>
+              </h1>
+              <p className="mt-2 text-lg font-medium text-white/80">
+                Manage and assign faculty members to courses
+              </p>
+            </div>
           </div>
         </div>
       </div>
