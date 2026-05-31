@@ -18,6 +18,7 @@ import {
   Star,
   ExternalLink,
   GraduationCap,
+  Upload,
 } from "lucide-react";
 import Loading from "../../components/Loading";
 
@@ -213,6 +214,12 @@ export default function StudentDashboard() {
                           >
                             <ExternalLink className="mr-1 inline h-4 w-4" />{" "}
                             Resources
+                          </Link>
+                          <Link
+                            to={`/student/courses/${course.code}/assignments`}
+                            className="btn btn-sm border-0 bg-cyan-50 text-cyan-700 shadow-sm transition-colors hover:bg-cyan-600 hover:text-white"
+                          >
+                            <Upload className="mr-1 inline h-4 w-4" /> Submit
                           </Link>
                         </div>
                       </div>

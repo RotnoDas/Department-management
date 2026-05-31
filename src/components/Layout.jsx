@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   BookOpen,
   Bell,
+  FileText,
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -71,6 +72,11 @@ const NAV = {
       to: "/teacher/dashboard",
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
+    },
+    {
+      to: "/teacher/assignments",
+      label: "Assignments",
+      icon: <FileText className="h-5 w-5" />,
     },
     {
       to: "/teacher/profile",

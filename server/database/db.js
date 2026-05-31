@@ -94,11 +94,16 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS notices (
-    id         INTEGER PRIMARY KEY AUTOINCREMENT,
-    title      TEXT NOT NULL,
-    content    TEXT NOT NULL,
-    author_id  INTEGER REFERENCES admins(id) ON DELETE SET NULL,
-    created_at TEXT DEFAULT (datetime('now'))
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    title         TEXT NOT NULL,
+    content       TEXT,
+    file_path     TEXT,
+    original_name TEXT,
+    file_mime     TEXT,
+    file_size     INTEGER,
+    author_id     INTEGER REFERENCES admins(id) ON DELETE SET NULL,
+    created_at    TEXT DEFAULT (datetime('now')),
+    updated_at    TEXT DEFAULT (datetime('now'))
   );
 
   CREATE TABLE IF NOT EXISTS course_materials (
@@ -112,6 +117,41 @@ db.exec(`
     teacher_id    INTEGER REFERENCES teachers(id) ON DELETE CASCADE,
     created_at    TEXT DEFAULT (datetime('now'))
   );
+
+  CREATE TABLE IF NOT EXISTS assignment_submissions (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    course_code   TEXT NOT NULL,
+    semester      INTEGER NOT NULL,
+    title         TEXT NOT NULL,
+    note          TEXT,
+    file_path     TEXT NOT NULL,
+    original_name TEXT NOT NULL,
+    file_mime     TEXT,
+    file_size     INTEGER,
+    student_id    INTEGER NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+    teacher_id    INTEGER REFERENCES teachers(id) ON DELETE SET NULL,
+    created_at    TEXT DEFAULT (datetime('now'))
+  );
 `);
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_assignment_submissions_student_course
+    ON assignment_submissions(student_id, course_code);
+  CREATE INDEX IF NOT EXISTS idx_assignment_submissions_course_semester
+    ON assignment_submissions(course_code, semester);
+`);
+
+const ensureColumn = (table, column, definition) => {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!columns.some((item) => item.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${definition}`);
+  }
+};
+
+ensureColumn("notices", "file_path", "file_path TEXT");
+ensureColumn("notices", "original_name", "original_name TEXT");
+ensureColumn("notices", "file_mime", "file_mime TEXT");
+ensureColumn("notices", "file_size", "file_size INTEGER");
+ensureColumn("notices", "updated_at", "updated_at TEXT");
 
 export default db;

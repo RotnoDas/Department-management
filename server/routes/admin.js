@@ -1,9 +1,84 @@
 import express from "express";
 import bcrypt from "bcryptjs";
+import fs from "fs";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 import db from "../database/db.js";
 import { verifyToken, requireRole } from "../middleware/auth.js";
 
 const router = express.Router();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsDir = path.resolve(__dirname, "../uploads");
+
+fs.mkdirSync(uploadsDir, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: uploadsDir,
+  filename: (_req, file, cb) => {
+    const extension = path.extname(file.originalname);
+    const safeName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
+    cb(null, safeName);
+  },
+});
+const upload = multer({ storage });
+
+const getNoticeAttachment = (file) =>
+  file
+    ? {
+        filePath: `/uploads/${file.filename}`,
+        originalName: file.originalname,
+        fileMime: file.mimetype,
+        fileSize: file.size,
+      }
+    : {
+        filePath: null,
+        originalName: null,
+        fileMime: null,
+        fileSize: null,
+      };
+
+const removeUpload = (filePath) => {
+  if (!filePath) return;
+
+  const resolvedPath = path.resolve(
+    __dirname,
+    "..",
+    filePath.replace(/^\/+/, ""),
+  );
+  if (
+    resolvedPath !== uploadsDir &&
+    !resolvedPath.startsWith(`${uploadsDir}${path.sep}`)
+  ) {
+    return;
+  }
+
+  fs.unlink(resolvedPath, (err) => {
+    if (err && err.code !== "ENOENT") {
+      console.error("Failed to remove notice attachment:", err.message);
+    }
+  });
+};
+
+const getNoticePayload = (body) => ({
+  title: String(body.title || "").trim(),
+  content: String(body.content || "").trim(),
+});
+
+const noticeSelect = `
+  SELECT n.id, n.title, n.content,
+         n.file_path as filePath,
+         n.original_name as originalName,
+         n.file_mime as fileMime,
+         n.file_size as fileSize,
+         n.created_at as createdAt,
+         n.updated_at as updatedAt,
+         a.name as authorName
+  FROM notices n
+  LEFT JOIN admins a ON n.author_id = a.id
+`;
+
 router.use(verifyToken, requireRole("admin"));
 
 // ── GET /api/admin/dashboard ────────────────────────────────
@@ -319,32 +394,130 @@ router.get("/notices", (req, res) => {
   const notices = db
     .prepare(
       `
-    SELECT n.id, n.title, n.content, n.created_at as createdAt, a.name as authorName
-    FROM notices n
-    LEFT JOIN admins a ON n.author_id = a.id
-    ORDER BY n.created_at DESC
+    ${noticeSelect}
+    ORDER BY n.created_at DESC, n.id DESC
   `,
     )
     .all();
   res.json(notices);
 });
 
-router.post("/notices", (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content)
-    return res.status(400).json({ error: "Title and content are required." });
+router.post("/notices", upload.single("file"), (req, res) => {
+  const { title, content } = getNoticePayload(req.body);
+  if (!title) {
+    removeUpload(req.file?.path);
+    return res.status(400).json({ error: "Notice title is required." });
+  }
+  if (!content && !req.file) {
+    removeUpload(req.file?.path);
+    return res
+      .status(400)
+      .json({ error: "Write notice text or attach a file." });
+  }
 
   const admin = db
     .prepare("SELECT id FROM admins WHERE user_id=?")
     .get(req.user.userId);
   const adminId = admin ? admin.id : null;
+  const attachment = getNoticeAttachment(req.file);
 
   db.prepare(
-    "INSERT INTO notices (title, content, author_id) VALUES (?, ?, ?)",
-  ).run(title, content, adminId);
+    `
+    INSERT INTO notices (
+      title, content, file_path, original_name, file_mime, file_size, author_id
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `,
+  ).run(
+    title,
+    content,
+    attachment.filePath,
+    attachment.originalName,
+    attachment.fileMime,
+    attachment.fileSize,
+    adminId,
+  );
   res
     .status(201)
     .json({ success: true, message: "Notice published successfully." });
+});
+
+router.put("/notices/:id", upload.single("file"), (req, res) => {
+  const existing = db
+    .prepare("SELECT * FROM notices WHERE id=?")
+    .get(req.params.id);
+  if (!existing) {
+    removeUpload(req.file?.path);
+    return res.status(404).json({ error: "Notice not found." });
+  }
+
+  const { title, content } = getNoticePayload(req.body);
+  if (!title) {
+    removeUpload(req.file?.path);
+    return res.status(400).json({ error: "Notice title is required." });
+  }
+
+  const shouldRemoveFile =
+    req.body.removeFile === "true" || req.body.removeFile === "1";
+  const uploadedAttachment = getNoticeAttachment(req.file);
+  const nextAttachment = req.file
+    ? uploadedAttachment
+    : shouldRemoveFile
+      ? getNoticeAttachment(null)
+      : {
+          filePath: existing.file_path,
+          originalName: existing.original_name,
+          fileMime: existing.file_mime,
+          fileSize: existing.file_size,
+        };
+
+  if (!content && !nextAttachment.filePath) {
+    removeUpload(req.file?.path);
+    return res
+      .status(400)
+      .json({ error: "Write notice text or keep an attachment." });
+  }
+
+  db.prepare(
+    `
+    UPDATE notices
+    SET title=?,
+        content=?,
+        file_path=?,
+        original_name=?,
+        file_mime=?,
+        file_size=?,
+        updated_at=datetime('now')
+    WHERE id=?
+  `,
+  ).run(
+    title,
+    content,
+    nextAttachment.filePath,
+    nextAttachment.originalName,
+    nextAttachment.fileMime,
+    nextAttachment.fileSize,
+    req.params.id,
+  );
+
+  if ((req.file || shouldRemoveFile) && existing.file_path) {
+    removeUpload(existing.file_path);
+  }
+
+  res.json({ success: true, message: "Notice updated successfully." });
+});
+
+router.delete("/notices/:id", (req, res) => {
+  const existing = db
+    .prepare("SELECT file_path FROM notices WHERE id=?")
+    .get(req.params.id);
+  if (!existing) {
+    return res.status(404).json({ error: "Notice not found." });
+  }
+
+  db.prepare("DELETE FROM notices WHERE id=?").run(req.params.id);
+  removeUpload(existing.file_path);
+  res.json({ success: true, message: "Notice deleted." });
 });
 
 export default router;

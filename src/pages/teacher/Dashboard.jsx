@@ -14,11 +14,10 @@ import {
   Calendar,
   Files,
   CheckSquare,
-  Clock,
   Users,
   Mail,
   Presentation,
-  AlertCircle,
+  FileText,
 } from "lucide-react";
 import Loading from "../../components/Loading";
 
@@ -246,6 +245,13 @@ export default function TeacherDashboard() {
                                     className="btn btn-sm flex-1 border-0 bg-slate-50 text-slate-600 shadow-sm transition-colors hover:bg-slate-200"
                                   >
                                     <Files className="mr-1 h-4 w-4" /> Materials
+                                  </Link>
+                                  <Link
+                                    to={`/teacher/assignments?course=${encodeURIComponent(course.courseCode)}`}
+                                    className="btn btn-sm flex-1 border-0 bg-indigo-50 text-indigo-700 shadow-sm transition-colors hover:bg-indigo-600 hover:text-white"
+                                  >
+                                    <FileText className="mr-1 h-4 w-4" />{" "}
+                                    Assignments
                                   </Link>
                                 </div>
                               </div>

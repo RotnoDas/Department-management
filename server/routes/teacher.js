@@ -72,6 +72,62 @@ router.get("/courses", (req, res) => {
 
   res.json(courses);
 });
+
+router.get("/assignments", (req, res) => {
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  const courses = db
+    .prepare(
+      `
+    SELECT course_code as courseCode, course_name as courseName, semester
+    FROM courses
+    WHERE teacher_id=?
+    ORDER BY semester ASC, course_code ASC
+  `,
+    )
+    .all(teacher.id);
+
+  const params = [teacher.id];
+  let submissionsSql = `
+    SELECT a.id,
+           a.course_code as courseCode,
+           c.course_name as courseName,
+           a.semester,
+           a.title,
+           a.note,
+           a.file_path as filePath,
+           a.original_name as originalName,
+           a.file_mime as fileMime,
+           a.file_size as fileSize,
+           a.created_at as createdAt,
+           s.name as studentName,
+           s.student_id as studentRoll
+    FROM assignment_submissions a
+    JOIN students s ON s.id = a.student_id
+    JOIN courses c ON c.course_code = a.course_code
+    WHERE c.teacher_id=?
+  `;
+
+  if (req.query.courseCode) {
+    submissionsSql += " AND a.course_code=?";
+    params.push(req.query.courseCode);
+  }
+
+  submissionsSql += `
+    ORDER BY a.semester ASC,
+             a.course_code ASC,
+             LOWER(s.name) ASC,
+             s.student_id ASC,
+             a.created_at DESC,
+             a.id DESC
+  `;
+
+  const submissions = db.prepare(submissionsSql).all(...params);
+  res.json({ courses, submissions });
+});
 // ── Course Materials ───────────────────────────────────────
 router.get("/courses/:courseCode/materials", (req, res) => {
   const { courseCode } = req.params;

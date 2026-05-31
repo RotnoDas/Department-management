@@ -30,11 +30,13 @@ import StudentProfile from "./pages/student/Profile";
 import StudentAttendance from "./pages/student/Attendance";
 import StudentNotices from "./pages/student/Notices";
 import StudentCourseMaterials from "./pages/student/CourseMaterials";
+import StudentAssignmentSubmission from "./pages/student/AssignmentSubmission";
 
 // Teacher
 import TeacherDashboard from "./pages/teacher/Dashboard";
 import TeacherProfile from "./pages/teacher/Profile";
 import TeacherCourseMaterials from "./pages/teacher/CourseMaterials";
+import TeacherAssignments from "./pages/teacher/Assignments";
 
 const router = createBrowserRouter([
   // ── Public ────────────────────────────────────────────────
@@ -79,6 +81,10 @@ const router = createBrowserRouter([
         path: "/student/courses/:courseCode/materials",
         element: <StudentCourseMaterials />,
       },
+      {
+        path: "/student/courses/:courseCode/assignments",
+        element: <StudentAssignmentSubmission />,
+      },
     ],
   },
 
@@ -92,6 +98,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/teacher/dashboard", element: <TeacherDashboard /> },
       { path: "/teacher/profile", element: <TeacherProfile /> },
+      { path: "/teacher/assignments", element: <TeacherAssignments /> },
       {
         path: "/teacher/courses/:courseCode/materials",
         element: <TeacherCourseMaterials />,
