@@ -21,11 +21,14 @@ import Rejected from "./pages/auth/Rejected";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminStudents from "./pages/admin/Students";
 import AdminTeachers from "./pages/admin/Teachers";
+import AdminCourses from "./pages/admin/Courses";
+import AdminNotices from "./pages/admin/Notices";
 
 // Student
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentProfile from "./pages/student/Profile";
 import StudentAttendance from "./pages/student/Attendance";
+import StudentNotices from "./pages/student/Notices";
 
 // Teacher
 import TeacherDashboard from "./pages/teacher/Dashboard";
@@ -53,6 +56,8 @@ const router = createBrowserRouter([
       { path: "/admin/dashboard", element: <AdminDashboard /> },
       { path: "/admin/students", element: <AdminStudents /> },
       { path: "/admin/teachers", element: <AdminTeachers /> },
+      { path: "/admin/courses", element: <AdminCourses /> },
+      { path: "/admin/notices", element: <AdminNotices /> },
     ],
   },
 
@@ -67,6 +72,7 @@ const router = createBrowserRouter([
       { path: "/student/dashboard", element: <StudentDashboard /> },
       { path: "/student/profile", element: <StudentProfile /> },
       { path: "/student/attendance", element: <StudentAttendance /> },
+      { path: "/student/notices", element: <StudentNotices /> },
     ],
   },
 

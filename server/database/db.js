@@ -92,6 +92,14 @@ db.exec(`
     status      TEXT DEFAULT 'present' CHECK(status IN ('present','absent','late')),
     UNIQUE(session_id, student_id)
   );
+
+  CREATE TABLE IF NOT EXISTS notices (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    title      TEXT NOT NULL,
+    content    TEXT NOT NULL,
+    author_id  INTEGER REFERENCES admins(id) ON DELETE SET NULL,
+    created_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 export default db;

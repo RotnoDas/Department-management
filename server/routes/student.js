@@ -50,4 +50,19 @@ router.put("/profile", (req, res) => {
   res.json({ success: true, message: "Profile updated." });
 });
 
+// ── Notices ────────────────────────────────────────────────
+router.get("/notices", (req, res) => {
+  const notices = db
+    .prepare(
+      `
+    SELECT n.id, n.title, n.content, n.created_at as createdAt, a.name as authorName
+    FROM notices n
+    LEFT JOIN admins a ON n.author_id = a.id
+    ORDER BY n.created_at DESC
+  `,
+    )
+    .all();
+  res.json(notices);
+});
+
 export default router;

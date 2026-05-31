@@ -94,5 +94,5 @@ export const SEMESTER_COURSES = {
     { code: "CSE 4217", title: "Human Computer Interaction", credits: 3 },
     { code: "HUM 4201", title: "Industrial Management and Accounting", credits: 3 },
     { code: "CSE 4250", title: "Viva Voce", credits: 0.75 }
-  ],
+  ]
 };

@@ -11,6 +11,8 @@ import {
   LogOut,
   Menu,
   ShieldCheck,
+  BookOpen,
+  Bell,
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -31,6 +33,16 @@ const NAV = {
       label: "Teachers",
       icon: <School className="h-5 w-5" />,
     },
+    {
+      to: "/admin/courses",
+      label: "Courses",
+      icon: <BookOpen className="h-5 w-5" />,
+    },
+    {
+      to: "/admin/notices",
+      label: "Notices",
+      icon: <Bell className="h-5 w-5" />,
+    },
   ],
   student: [
     {
@@ -42,6 +54,11 @@ const NAV = {
       to: "/student/attendance",
       label: "Attendance",
       icon: <CheckSquare className="h-5 w-5" />,
+    },
+    {
+      to: "/student/notices",
+      label: "Notices",
+      icon: <Bell className="h-5 w-5" />,
     },
     {
       to: "/student/profile",

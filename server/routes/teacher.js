@@ -42,4 +42,24 @@ router.put("/profile", (req, res) => {
   res.json({ success: true, message: "Profile updated." });
 });
 
+router.get("/courses", (req, res) => {
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  const courses = db
+    .prepare(
+      `
+    SELECT id, course_code as courseCode, course_name as courseName, semester
+    FROM courses
+    WHERE teacher_id=?
+    ORDER BY semester ASC, course_code ASC
+  `,
+    )
+    .all(teacher.id);
+
+  res.json(courses);
+});
+
 export default router;

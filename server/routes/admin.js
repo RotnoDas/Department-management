@@ -268,4 +268,83 @@ router.delete("/teachers/:userId", (req, res) => {
   res.json({ success: true, message: "Teacher deleted." });
 });
 
+// ── Courses ────────────────────────────────────────────────
+router.get("/courses", (req, res) => {
+  const courses = db
+    .prepare(
+      `
+    SELECT c.id, c.course_code as courseCode, c.course_name as courseName,
+           c.semester, t.user_id as teacherUserId, t.name as teacherName
+    FROM courses c
+    LEFT JOIN teachers t ON c.teacher_id = t.id
+    ORDER BY c.semester ASC, c.course_code ASC
+  `,
+    )
+    .all();
+  res.json(courses);
+});
+
+router.post("/courses/assign-by-code", (req, res) => {
+  const { courseCode, courseName, semester, teacherUserId } = req.body;
+  if (!courseCode)
+    return res.status(400).json({ error: "Course code is required." });
+
+  let dbTeacherId = null;
+  if (teacherUserId) {
+    const teacher = db
+      .prepare("SELECT id FROM teachers WHERE user_id=?")
+      .get(teacherUserId);
+    if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+    dbTeacherId = teacher.id;
+  }
+
+  const course = db
+    .prepare("SELECT id FROM courses WHERE course_code=?")
+    .get(courseCode);
+  if (course) {
+    db.prepare(
+      "UPDATE courses SET teacher_id=?, course_name=?, semester=? WHERE id=?",
+    ).run(dbTeacherId, courseName, semester, course.id);
+  } else {
+    db.prepare(
+      `INSERT INTO courses (course_code, course_name, semester, teacher_id) VALUES (?, ?, ?, ?)`,
+    ).run(courseCode, courseName, semester, dbTeacherId);
+  }
+
+  res.json({ success: true, message: "Course assigned successfully." });
+});
+
+// ── Notices ────────────────────────────────────────────────
+router.get("/notices", (req, res) => {
+  const notices = db
+    .prepare(
+      `
+    SELECT n.id, n.title, n.content, n.created_at as createdAt, a.name as authorName
+    FROM notices n
+    LEFT JOIN admins a ON n.author_id = a.id
+    ORDER BY n.created_at DESC
+  `,
+    )
+    .all();
+  res.json(notices);
+});
+
+router.post("/notices", (req, res) => {
+  const { title, content } = req.body;
+  if (!title || !content)
+    return res.status(400).json({ error: "Title and content are required." });
+
+  const admin = db
+    .prepare("SELECT id FROM admins WHERE user_id=?")
+    .get(req.user.userId);
+  const adminId = admin ? admin.id : null;
+
+  db.prepare(
+    "INSERT INTO notices (title, content, author_id) VALUES (?, ?, ?)",
+  ).run(title, content, adminId);
+  res
+    .status(201)
+    .json({ success: true, message: "Notice published successfully." });
+});
+
 export default router;
