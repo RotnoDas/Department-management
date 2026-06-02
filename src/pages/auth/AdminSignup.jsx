@@ -43,7 +43,7 @@ export default function AdminSignup() {
       <div className="from-primary/10 via-base-200 to-secondary/10 flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
         <div className="card bg-base-100 w-full max-w-sm text-center shadow-xl">
           <div className="card-body p-10">
-            <div className="mb-3 flex justify-center text-primary">
+            <div className="text-primary mb-3 flex justify-center">
               <CheckCircle className="h-16 w-16" />
             </div>
             <h2 className="text-success text-2xl font-bold">
@@ -146,7 +146,7 @@ export default function AdminSignup() {
 
               <button
                 type="submit"
-                className="btn btn-primary w-full mt-4"
+                className="btn btn-primary mt-4 w-full"
                 disabled={loading}
               >
                 {loading ? "Registering…" : "Create Admin Account"}

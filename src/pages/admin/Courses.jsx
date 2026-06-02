@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import { SEMESTER_COURSES } from "../../data/courses";
 import { BookOpen } from "lucide-react";
@@ -25,7 +25,7 @@ export default function AdminCourses() {
       // Filter only approved teachers for assignment
       setTeachers(teachersRes.data.filter((t) => t.status === "approved"));
     } catch (err) {
-      toast.error("Failed to load courses data.");
+      addToast({ title: "Failed to load courses data.", color: "danger" });
     } finally {
       setLoading(false);
     }
@@ -45,10 +45,10 @@ export default function AdminCourses() {
         semester,
         teacherUserId: teacherUserId || null,
       });
-      toast.success("Course assigned successfully.");
+      addToast({ title: "Course assigned successfully.", color: "success" });
       fetchData(); // refresh data
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to assign course.");
+      addToast({ title: err.response?.data?.error || "Failed to assign course.", color: "danger" });
     } finally {
       setAssigning(null);
     }

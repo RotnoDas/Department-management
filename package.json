@@ -14,6 +14,10 @@
     "seed": "node --disable-warning=ExperimentalWarning server/database/seed.js"
   },
   "dependencies": {
+    "@heroui/react": "^3.1.0",
+    "@heroui/system": "^2.4.28",
+    "@heroui/theme": "^2.4.26",
+    "@heroui/toast": "^2.0.22",
     "@tailwindcss/vite": "^4.2.4",
     "axios": "^1.16.0",
     "bcryptjs": "^2.4.3",
@@ -22,13 +26,13 @@
     "dotenv": "^16.6.1",
     "express": "^4.22.1",
     "express-session": "^1.19.0",
+    "framer-motion": "^12.40.0",
     "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.14.0",
     "multer": "^2.1.1",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router": "^7.14.2",
-    "react-toastify": "^11.1.0",
     "recharts": "^3.8.1",
     "tailwindcss": "^4.2.4"
   },

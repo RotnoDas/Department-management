@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import {
   ArrowLeft,
@@ -42,9 +42,10 @@ export default function StudentAssignmentSubmission() {
       })
       .catch((err) => {
         if (!active) return;
-        toast.error(
-          err.response?.data?.error || "Failed to load assignment submissions.",
-        );
+        addToast({ 
+          title: err.response?.data?.error || "Failed to load assignment submissions.", 
+          color: "danger" 
+        });
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -67,8 +68,8 @@ export default function StudentAssignmentSubmission() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return toast.error("Assignment title is required.");
-    if (!file) return toast.error("Select a file to submit.");
+    if (!title.trim()) return addToast({ title: "Assignment title is required.", color: "danger" });
+    if (!file) return addToast({ title: "Select a file to submit.", color: "danger" });
 
     setUploading(true);
     const formData = new FormData();
@@ -80,7 +81,7 @@ export default function StudentAssignmentSubmission() {
       await api.post(`/student/courses/${courseCode}/assignments`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Assignment submitted successfully.");
+      addToast({ title: "Assignment submitted successfully.", color: "success" });
       setTitle("");
       setNote("");
       setFile(null);
@@ -88,7 +89,7 @@ export default function StudentAssignmentSubmission() {
       if (fileInput) fileInput.value = "";
       await refreshAssignments();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Submission failed.");
+      addToast({ title: err.response?.data?.error || "Submission failed.", color: "danger" });
     } finally {
       setUploading(false);
     }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import {
   ArrowLeft,
@@ -35,9 +35,10 @@ export default function TeacherAssignments() {
       })
       .catch((err) => {
         if (!active) return;
-        toast.error(
-          err.response?.data?.error || "Failed to load assignment submissions.",
-        );
+        addToast({ 
+          title: err.response?.data?.error || "Failed to load assignment submissions.", 
+          color: "danger" 
+        });
       })
       .finally(() => {
         if (active) setLoading(false);

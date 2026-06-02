@@ -38,8 +38,8 @@ export default function TeacherLogin() {
     <div className="from-info/20 via-base-200 to-primary/20 relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br p-4">
       <div className="relative z-10 w-full max-w-md">
         <div className="animate-in fade-in slide-in-from-top mb-8 text-center duration-500">
-          <div className="from-info to-primary text-white mx-auto mb-4 flex h-20 w-20 transform items-center justify-center rounded-3xl bg-gradient-to-br shadow-2xl transition-transform hover:scale-110">
-            <Presentation className="w-10 h-10" />
+          <div className="from-info to-primary mx-auto mb-4 flex h-20 w-20 transform items-center justify-center rounded-3xl bg-gradient-to-br text-white shadow-2xl transition-transform hover:scale-110">
+            <Presentation className="h-10 w-10" />
           </div>
           <h1 className="from-info to-secondary bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
             Teacher Portal
@@ -105,7 +105,7 @@ export default function TeacherLogin() {
 
               <button
                 type="submit"
-                className="btn btn-info w-full shadow-lg text-white"
+                className="btn btn-info w-full text-white shadow-lg"
                 disabled={loading}
               >
                 {loading ? "Signing in..." : "Sign In as Teacher"}

@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
 import api from "../../api/axios";
 import { Calendar, Save, Edit3, X, Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import { SEMESTER_COURSES } from "../../data/courses";
 
 const DAYS = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
@@ -42,7 +42,7 @@ export default function AdminRoutine() {
       const res = await api.get("/admin/routine");
       setRoutines(res.data);
     } catch (err) {
-      toast.error("Failed to load routines");
+      addToast({ title: "Failed to load routines", color: "danger" });
     }
   };
 
@@ -51,7 +51,7 @@ export default function AdminRoutine() {
       const res = await api.get("/admin/courses");
       setCourses(res.data);
     } catch (err) {
-      toast.error("Failed to load courses");
+      addToast({ title: "Failed to load courses", color: "danger" });
     }
   };
 
@@ -93,11 +93,11 @@ export default function AdminRoutine() {
         teacherId: formData.teacherId || null,
         room: formData.room,
       });
-      toast.success("Routine updated");
+      addToast({ title: "Routine updated", color: "success" });
       setEditingCell(null);
       fetchRoutines();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to update routine");
+      addToast({ title: err.response?.data?.error || "Failed to update routine", color: "danger" });
     }
   };
 

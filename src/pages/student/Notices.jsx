@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import NoticeAttachment from "../../components/NoticeAttachment";
 import {
@@ -23,7 +23,7 @@ export default function StudentNotices() {
         const { data } = await api.get("/student/notices");
         setNotices(data);
       } catch {
-        toast.error("Failed to load notices.");
+        addToast({ title: "Failed to load notices.", color: "danger" });
       } finally {
         setLoading(false);
       }

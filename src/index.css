@@ -1,6 +1,16 @@
 @import "tailwindcss";
 @plugin "daisyui/index.js";
 
+@theme {
+  --color-indigo-100: #e0e7ff;
+  --color-blue-50: #eff6ff;
+  --color-cyan-100: #cffafe;
+}
+
+body {
+  @apply bg-gradient-to-br from-indigo-100 via-blue-50 to-cyan-100 min-h-screen text-slate-900;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

@@ -46,7 +46,7 @@ export default function TeacherSignup() {
       <div className="from-info/10 via-base-200 to-secondary/10 flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
         <div className="card bg-base-100 w-full max-w-sm text-center shadow-xl">
           <div className="card-body p-10">
-            <div className="mb-3 flex justify-center text-info">
+            <div className="text-info mb-3 flex justify-center">
               <CheckCircle className="h-16 w-16" />
             </div>
             <h2 className="text-success text-2xl font-bold">
@@ -186,7 +186,7 @@ export default function TeacherSignup() {
 
               <button
                 type="submit"
-                className="btn btn-info w-full mt-6 text-white"
+                className="btn btn-info mt-6 w-full text-white"
                 disabled={loading}
               >
                 {loading ? "Registering…" : "Create Teacher Account"}

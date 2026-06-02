@@ -126,7 +126,7 @@ export default function Layout() {
   const links = NAV[user?.role] || [];
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-transparent font-sans">
       {/* Mobile overlay */}
       {open && (
         <div
@@ -138,7 +138,7 @@ export default function Layout() {
       <div className="flex min-h-screen">
         {/* ── Premium Light Sidebar ── */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-slate-200 bg-white text-slate-700 shadow-xl transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+          className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/20 bg-white/60 backdrop-blur-2xl text-slate-800 shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
         >
           {/* Brand */}
           <div className="border-b border-slate-100 bg-white/80 p-6 backdrop-blur">
@@ -173,8 +173,7 @@ export default function Layout() {
             ))}
           </nav>
 
-          {/* User profile footer */}
-          <div className="border-t border-slate-100 bg-slate-50 p-5">
+          <div className="border-t border-slate-200/50 bg-white/40 p-5">
             <div className="mb-4 flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
               <div className="avatar placeholder">
                 <div
@@ -203,7 +202,7 @@ export default function Layout() {
         </aside>
 
         {/* ── Main ── */}
-        <div className="flex min-w-0 flex-1 flex-col bg-slate-50">
+        <div className="flex min-w-0 flex-1 flex-col bg-transparent">
           {/* Topbar */}
           <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 shadow-sm backdrop-blur-xl sm:px-8">
             <button

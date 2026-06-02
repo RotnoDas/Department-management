@@ -29,8 +29,8 @@ export default function AdminLogin() {
     <div className="from-primary/20 via-base-200 to-secondary/20 relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br p-4">
       <div className="relative z-10 w-full max-w-md">
         <div className="animate-in fade-in slide-in-from-top mb-8 text-center duration-500">
-          <div className="from-primary to-secondary text-white mx-auto mb-4 flex h-20 w-20 transform items-center justify-center rounded-3xl bg-gradient-to-br shadow-2xl transition-transform hover:scale-110">
-            <ShieldCheck className="w-10 h-10" />
+          <div className="from-primary to-secondary mx-auto mb-4 flex h-20 w-20 transform items-center justify-center rounded-3xl bg-gradient-to-br text-white shadow-2xl transition-transform hover:scale-110">
+            <ShieldCheck className="h-10 w-10" />
           </div>
           <h1 className="from-primary to-secondary bg-gradient-to-r bg-clip-text text-3xl font-bold text-transparent">
             Admin Portal

@@ -47,7 +47,7 @@ export default function StudentSignup() {
       <div className="from-secondary/10 via-base-200 to-primary/10 flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
         <div className="card bg-base-100 w-full max-w-sm text-center shadow-xl">
           <div className="card-body p-10">
-            <div className="mb-3 flex justify-center text-secondary">
+            <div className="text-secondary mb-3 flex justify-center">
               <CheckCircle className="h-16 w-16" />
             </div>
             <h2 className="text-success text-2xl font-bold">

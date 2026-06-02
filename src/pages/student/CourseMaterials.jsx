@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import {
   File,
@@ -31,7 +31,7 @@ export default function StudentCourseMaterials() {
       setCourseName(data.courseName);
       setMaterials(data.materials);
     } catch (err) {
-      toast.error("Failed to load materials or unauthorized access.");
+      addToast({ title: "Failed to load materials or unauthorized access.", color: "danger" });
     } finally {
       setLoading(false);
     }

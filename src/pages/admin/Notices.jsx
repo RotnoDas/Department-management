@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import NoticeAttachment, {
   AttachmentIcon,
@@ -48,7 +48,7 @@ export default function AdminNotices() {
       const data = await loadAdminNotices();
       setNotices(data);
     } catch {
-      toast.error("Failed to load notices.");
+      addToast({ title: "Failed to load notices.", color: "danger" });
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ export default function AdminNotices() {
         const data = await loadAdminNotices();
         if (isActive) setNotices(data);
       } catch {
-        toast.error("Failed to load notices.");
+        addToast({ title: "Failed to load notices.", color: "danger" });
       } finally {
         if (isActive) setLoading(false);
       }
@@ -111,9 +111,9 @@ export default function AdminNotices() {
 
     const hasExistingAttachment =
       editingNotice?.filePath && !removeExistingFile && !file;
-    if (!form.title.trim()) return toast.error("Notice title is required.");
+    if (!form.title.trim()) return addToast({ title: "Notice title is required.", color: "danger" });
     if (!form.content.trim() && !file && !hasExistingAttachment) {
-      return toast.error("Write notice text or attach a file.");
+      return addToast({ title: "Write notice text or attach a file.", color: "danger" });
     }
 
     const formData = new FormData();
@@ -128,18 +128,18 @@ export default function AdminNotices() {
         await api.put(`/admin/notices/${editingNotice.id}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        toast.success("Notice updated successfully.");
+        addToast({ title: "Notice updated successfully.", color: "success" });
       } else {
         await api.post("/admin/notices", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
-        toast.success("Notice published successfully.");
+        addToast({ title: "Notice published successfully.", color: "success" });
       }
 
       closeModal();
       fetchNotices();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to save notice.");
+      addToast({ title: err.response?.data?.error || "Failed to save notice.", color: "danger" });
     } finally {
       setSaving(false);
     }
@@ -150,10 +150,10 @@ export default function AdminNotices() {
 
     try {
       await api.delete(`/admin/notices/${notice.id}`);
-      toast.success("Notice deleted.");
+      addToast({ title: "Notice deleted.", color: "success" });
       fetchNotices();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Failed to delete notice.");
+      addToast({ title: err.response?.data?.error || "Failed to delete notice.", color: "danger" });
     }
   };
 

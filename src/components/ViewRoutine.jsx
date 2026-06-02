@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment } from "react";
 import api from "../api/axios";
 import { Loader2 } from "lucide-react";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 
 const DAYS = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"];
 const SEMESTERS = [
@@ -33,7 +33,7 @@ export default function ViewRoutine({ role }) {
     api
       .get(`/${role}/routine`)
       .then((res) => setRoutines(res.data))
-      .catch((err) => toast.error("Failed to load routine"))
+      .catch((err) => addToast({ title: "Failed to load routine", color: "danger" }))
       .finally(() => setLoading(false));
   }, [role]);
 

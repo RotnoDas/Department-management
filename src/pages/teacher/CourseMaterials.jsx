@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import api from "../../api/axios";
-import { toast } from "react-toastify";
+import { addToast } from "@heroui/toast";
 import Loading from "../../components/Loading";
 import {
   File,
@@ -37,7 +37,7 @@ export default function TeacherCourseMaterials() {
       setCourseName(data.courseName);
       setMaterials(data.materials);
     } catch (err) {
-      toast.error("Failed to load materials.");
+      addToast({ title: "Failed to load materials.", color: "danger" });
     } finally {
       setLoading(false);
     }
@@ -45,9 +45,9 @@ export default function TeacherCourseMaterials() {
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!title) return toast.error("Title is required.");
+    if (!title) return addToast({ title: "Title is required.", color: "danger" });
     if (!file && !description)
-      return toast.error("Provide a description or a file.");
+      return addToast({ title: "Provide a description or a file.", color: "danger" });
 
     setUploading(true);
     const formData = new FormData();
@@ -59,7 +59,7 @@ export default function TeacherCourseMaterials() {
       await api.post(`/teacher/courses/${courseCode}/materials`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.success("Material uploaded successfully.");
+      addToast({ title: "Material uploaded successfully.", color: "success" });
       setTitle("");
       setDescription("");
       setFile(null);
@@ -68,7 +68,7 @@ export default function TeacherCourseMaterials() {
       if (fileInput) fileInput.value = "";
       fetchMaterials();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Upload failed.");
+      addToast({ title: err.response?.data?.error || "Upload failed.", color: "danger" });
     } finally {
       setUploading(false);
     }
@@ -78,10 +78,10 @@ export default function TeacherCourseMaterials() {
     if (!window.confirm("Delete this material?")) return;
     try {
       await api.delete(`/teacher/materials/${id}`);
-      toast.success("Material deleted.");
+      addToast({ title: "Material deleted.", color: "success" });
       fetchMaterials();
     } catch (err) {
-      toast.error(err.response?.data?.error || "Delete failed.");
+      addToast({ title: err.response?.data?.error || "Delete failed.", color: "danger" });
     }
   };
 

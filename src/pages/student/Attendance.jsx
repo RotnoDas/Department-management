@@ -155,7 +155,7 @@ export default function StudentAttendance() {
         <div className="card-body">
           <h2 className="card-title mb-4 flex items-center text-2xl">
             <Clock className="text-primary mr-2 h-6 w-6" />
-            Active Classes
+            Today's Classes
           </h2>
 
           {activeSessions.length === 0 ? (
@@ -163,20 +163,22 @@ export default function StudentAttendance() {
               <div className="mb-4">
                 <Library className="text-base-content/20 mx-auto h-16 w-16" />
               </div>
-              <h3 className="text-xl font-bold">No Active Classes</h3>
+              <h3 className="text-xl font-bold">No Classes Today</h3>
               <p className="text-base-content/60 mt-2">
-                There are no classes available for attendance right now
+                There are no classes scheduled for you today.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              {activeSessions.map((session) => (
+              {activeSessions.map((session, index) => (
                 <div
-                  key={session.sessionId}
+                  key={session.sessionId || index}
                   className={`card border-2 ${
                     session.attendanceId
                       ? "border-success bg-success/5"
-                      : "border-primary bg-primary/5"
+                      : session.isActive
+                        ? "border-primary bg-primary/5"
+                        : "border-base-200 bg-base-100 opacity-75"
                   } shadow-lg`}
                 >
                   <div className="card-body p-5">
@@ -189,7 +191,7 @@ export default function StudentAttendance() {
                           {session.courseCode}
                         </p>
                       </div>
-                      {session.attendanceId && (
+                      {session.attendanceId ? (
                         <span className="badge badge-success gap-2">
                           <svg
                             className="h-4 w-4"
@@ -206,6 +208,16 @@ export default function StudentAttendance() {
                           </svg>
                           Marked
                         </span>
+                      ) : session.isPast ? (
+                        <span className="badge badge-error gap-2">Missed</span>
+                      ) : session.isActive ? (
+                        <span className="badge badge-primary animate-pulse gap-2">
+                          Active Now
+                        </span>
+                      ) : (
+                        <span className="badge badge-ghost gap-2">
+                          Upcoming
+                        </span>
                       )}
                     </div>
 
@@ -213,7 +225,7 @@ export default function StudentAttendance() {
                     <div className="bg-base-200 mb-3 rounded-lg p-3">
                       <div className="flex items-center justify-center gap-2">
                         <svg
-                          className="text-primary h-5 w-5"
+                          className={`h-5 w-5 ${session.isActive ? "text-primary" : "text-base-content/60"}`}
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -225,7 +237,9 @@ export default function StudentAttendance() {
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                           />
                         </svg>
-                        <span className="text-primary text-lg font-bold">
+                        <span
+                          className={`${session.isActive ? "text-primary" : "text-base-content/80"} text-lg font-bold`}
+                        >
                           {session.startTime} - {session.endTime}
                         </span>
                       </div>
@@ -272,19 +286,40 @@ export default function StudentAttendance() {
                       </div>
                     </div>
 
-                    {!session.attendanceId && (
-                      <button
-                        className="btn btn-primary mt-4 w-full"
-                        onClick={() => markAttendance(session.sessionId)}
-                        disabled={marking[session.sessionId] || !location}
-                      >
-                        {marking[session.sessionId] ? (
-                          <>
-                            <span className="loading loading-spinner loading-sm" />
-                            Marking...
-                          </>
+                    {!session.attendanceId && session.isActive && (
+                      <div className="mt-4">
+                        {session.isMarkable ? (
+                          <button
+                            className="btn btn-primary w-full"
+                            onClick={() => markAttendance(session.sessionId)}
+                            disabled={marking[session.sessionId] || !location}
+                          >
+                            {marking[session.sessionId] ? (
+                              <>
+                                <span className="loading loading-spinner loading-sm" />
+                                Marking...
+                              </>
+                            ) : (
+                              <>
+                                <svg
+                                  className="h-5 w-5"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                  />
+                                </svg>
+                                Mark Attendance
+                              </>
+                            )}
+                          </button>
                         ) : (
-                          <>
+                          <div className="bg-error/10 text-error flex items-center justify-center gap-2 rounded-lg p-3 text-center text-sm font-semibold">
                             <svg
                               className="h-5 w-5"
                               fill="none"
@@ -295,13 +330,13 @@ export default function StudentAttendance() {
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                               />
                             </svg>
-                            Mark Attendance
-                          </>
+                            Attendance window closed (15m limit)
+                          </div>
                         )}
-                      </button>
+                      </div>
                     )}
                   </div>
                 </div>
