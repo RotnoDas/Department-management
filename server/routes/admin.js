@@ -349,7 +349,7 @@ router.get("/courses", (req, res) => {
     .prepare(
       `
     SELECT c.id, c.course_code as courseCode, c.course_name as courseName,
-           c.semester, t.user_id as teacherUserId, t.name as teacherName
+           c.semester, t.id as teacherId, t.user_id as teacherUserId, t.name as teacherName
     FROM courses c
     LEFT JOIN teachers t ON c.teacher_id = t.id
     ORDER BY c.semester ASC, c.course_code ASC
@@ -518,6 +518,50 @@ router.delete("/notices/:id", (req, res) => {
   db.prepare("DELETE FROM notices WHERE id=?").run(req.params.id);
   removeUpload(existing.file_path);
   res.json({ success: true, message: "Notice deleted." });
+});
+
+// ── Routine ────────────────────────────────────────────────
+router.get("/routine", (req, res) => {
+  const routines = db
+    .prepare(
+      `
+    SELECT r.id, r.day, r.semester, r.time_slot as timeSlot, r.course_code as courseCode,
+           r.teacher_id as teacherId, r.room, t.name as teacherName, t.user_id as teacherUserId
+    FROM routines r
+    LEFT JOIN teachers t ON r.teacher_id = t.id
+  `,
+    )
+    .all();
+  res.json(routines);
+});
+
+router.post("/routine", (req, res) => {
+  const { day, semester, timeSlot, courseCode, teacherId, room } = req.body;
+  if (!day || !semester || !timeSlot) {
+    return res
+      .status(400)
+      .json({ error: "Day, semester, and time slot are required." });
+  }
+
+  db.prepare(
+    `
+    INSERT INTO routines (day, semester, time_slot, course_code, teacher_id, room)
+    VALUES (?, ?, ?, ?, ?, ?)
+    ON CONFLICT(day, semester, time_slot) DO UPDATE SET
+      course_code = excluded.course_code,
+      teacher_id = excluded.teacher_id,
+      room = excluded.room
+  `,
+  ).run(
+    day,
+    semester,
+    timeSlot,
+    courseCode || null,
+    teacherId || null,
+    room || null,
+  );
+
+  res.json({ success: true, message: "Routine updated." });
 });
 
 export default router;

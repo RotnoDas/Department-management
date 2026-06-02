@@ -19,19 +19,27 @@ import {
   ExternalLink,
   GraduationCap,
   Upload,
+  CalendarClock,
 } from "lucide-react";
 import Loading from "../../components/Loading";
 
 export default function StudentDashboard() {
   const [profile, setProfile] = useState(null);
   const [assignedCourses, setAssignedCourses] = useState([]);
+  const [todayClasses, setTodayClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([api.get("/student/profile"), api.get("/student/courses")])
-      .then(([profileRes, coursesRes]) => {
+    const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+    Promise.all([
+      api.get("/student/profile"),
+      api.get("/student/courses"),
+      api.get(`/student/today-classes?day=${today}`),
+    ])
+      .then(([profileRes, coursesRes, todayRes]) => {
         setProfile(profileRes.data);
         setAssignedCourses(coursesRes.data);
+        setTodayClasses(todayRes.data || []);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -242,6 +250,49 @@ export default function StudentDashboard() {
 
         {/* Sidebar */}
         <div className="space-y-8">
+          {/* Today's Classes Widget */}
+          <div className="card bg-base-100 border-base-200 border shadow-md">
+            <div className="card-body p-5">
+              <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+                <CalendarClock className="text-primary h-6 w-6" /> Today's
+                Classes
+              </h3>
+              {todayClasses.length > 0 ? (
+                <div className="space-y-3">
+                  {todayClasses.map((cls) => (
+                    <div
+                      key={cls.id}
+                      className="border-primary bg-base-200/50 flex flex-col gap-1 rounded-r-lg border-l-4 p-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold">
+                          {cls.courseCode}
+                        </span>
+                        <span className="badge badge-sm badge-primary badge-outline">
+                          {cls.timeSlot}
+                        </span>
+                      </div>
+                      <div className="text-base-content/70 flex justify-between text-xs">
+                        <span className="truncate pr-2">
+                          {cls.teacherName || "TBA"}
+                        </span>
+                        <span className="whitespace-nowrap">
+                          Room: {cls.room || "TBA"}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-base-200/50 rounded-lg py-4 text-center">
+                  <p className="text-base-content/60 text-sm font-medium">
+                    No classes scheduled for today.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* CGPA Widget */}
           <div className="card bg-base-100 border-base-200 card-hover relative overflow-hidden border shadow-md">
             <div className="bg-primary/10 absolute -top-10 -right-10 h-32 w-32 rounded-full blur-2xl"></div>

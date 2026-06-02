@@ -23,11 +23,13 @@ import AdminStudents from "./pages/admin/Students";
 import AdminTeachers from "./pages/admin/Teachers";
 import AdminCourses from "./pages/admin/Courses";
 import AdminNotices from "./pages/admin/Notices";
+import AdminRoutine from "./pages/admin/Routine";
 
 // Student
 import StudentDashboard from "./pages/student/Dashboard";
 import StudentProfile from "./pages/student/Profile";
 import StudentAttendance from "./pages/student/Attendance";
+import StudentRoutine from "./pages/student/Routine";
 import StudentNotices from "./pages/student/Notices";
 import StudentCourseMaterials from "./pages/student/CourseMaterials";
 import StudentAssignmentSubmission from "./pages/student/AssignmentSubmission";
@@ -35,6 +37,7 @@ import StudentAssignmentSubmission from "./pages/student/AssignmentSubmission";
 // Teacher
 import TeacherDashboard from "./pages/teacher/Dashboard";
 import TeacherProfile from "./pages/teacher/Profile";
+import TeacherRoutine from "./pages/teacher/Routine";
 import TeacherCourseMaterials from "./pages/teacher/CourseMaterials";
 import TeacherAssignments from "./pages/teacher/Assignments";
 
@@ -61,6 +64,7 @@ const router = createBrowserRouter([
       { path: "/admin/students", element: <AdminStudents /> },
       { path: "/admin/teachers", element: <AdminTeachers /> },
       { path: "/admin/courses", element: <AdminCourses /> },
+      { path: "/admin/routine", element: <AdminRoutine /> },
       { path: "/admin/notices", element: <AdminNotices /> },
     ],
   },
@@ -75,6 +79,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/student/dashboard", element: <StudentDashboard /> },
       { path: "/student/profile", element: <StudentProfile /> },
+      { path: "/student/routine", element: <StudentRoutine /> },
       { path: "/student/attendance", element: <StudentAttendance /> },
       { path: "/student/notices", element: <StudentNotices /> },
       {
@@ -98,6 +103,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/teacher/dashboard", element: <TeacherDashboard /> },
       { path: "/teacher/profile", element: <TeacherProfile /> },
+      { path: "/teacher/routine", element: <TeacherRoutine /> },
       { path: "/teacher/assignments", element: <TeacherAssignments /> },
       {
         path: "/teacher/courses/:courseCode/materials",

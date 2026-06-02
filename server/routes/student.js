@@ -282,4 +282,43 @@ router.post(
   },
 );
 
+router.get("/today-classes", (req, res) => {
+  const p = db
+    .prepare("SELECT semester FROM students WHERE user_id=?")
+    .get(req.user.userId);
+  if (!p) return res.status(404).json({ error: "Profile not found." });
+
+  const day = req.query.day;
+  if (!day) return res.status(400).json({ error: "Day is required." });
+
+  const classes = db
+    .prepare(
+      `
+    SELECT r.id, r.time_slot as timeSlot, r.course_code as courseCode, r.room,
+           t.name as teacherName
+    FROM routines r
+    LEFT JOIN teachers t ON r.teacher_id = t.id
+    WHERE r.semester = ? AND r.day = ?
+    ORDER BY r.time_slot ASC
+  `,
+    )
+    .all(p.semester, day);
+
+  res.json(classes);
+});
+
+router.get("/routine", (req, res) => {
+  const routines = db
+    .prepare(
+      `
+    SELECT r.id, r.day, r.semester, r.time_slot as timeSlot, r.course_code as courseCode,
+           r.room, t.name as teacherName
+    FROM routines r
+    LEFT JOIN teachers t ON r.teacher_id = t.id
+  `,
+    )
+    .all();
+  res.json(routines);
+});
+
 export default router;

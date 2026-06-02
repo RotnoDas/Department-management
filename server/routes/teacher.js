@@ -228,4 +228,41 @@ router.delete("/materials/:id", (req, res) => {
   res.json({ success: true, message: "Material deleted." });
 });
 
+router.get("/today-classes", (req, res) => {
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  const day = req.query.day;
+  if (!day) return res.status(400).json({ error: "Day is required." });
+
+  const classes = db
+    .prepare(
+      `
+    SELECT r.id, r.semester, r.time_slot as timeSlot, r.course_code as courseCode, r.room
+    FROM routines r
+    WHERE r.teacher_id = ? AND r.day = ?
+    ORDER BY r.time_slot ASC, r.semester ASC
+  `,
+    )
+    .all(teacher.id, day);
+
+  res.json(classes);
+});
+
+router.get("/routine", (req, res) => {
+  const routines = db
+    .prepare(
+      `
+    SELECT r.id, r.day, r.semester, r.time_slot as timeSlot, r.course_code as courseCode,
+           r.room, t.name as teacherName
+    FROM routines r
+    LEFT JOIN teachers t ON r.teacher_id = t.id
+  `,
+    )
+    .all();
+  res.json(routines);
+});
+
 export default router;

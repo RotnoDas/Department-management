@@ -24,13 +24,20 @@ import Loading from "../../components/Loading";
 export default function TeacherDashboard() {
   const [profile, setProfile] = useState(null);
   const [courses, setCourses] = useState([]);
+  const [todayClasses, setTodayClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([api.get("/teacher/profile"), api.get("/teacher/courses")])
-      .then(([profileRes, coursesRes]) => {
+    const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
+    Promise.all([
+      api.get("/teacher/profile"),
+      api.get("/teacher/courses"),
+      api.get(`/teacher/today-classes?day=${today}`),
+    ])
+      .then(([profileRes, coursesRes, todayClassesRes]) => {
         setProfile(profileRes.data);
         setCourses(coursesRes.data);
+        setTodayClasses(todayClassesRes.data);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -268,6 +275,45 @@ export default function TeacherDashboard() {
 
         {/* Sidebar */}
         <div className="space-y-8">
+          {/* Today's Classes */}
+          <div className="card bg-base-100 border-base-200 border shadow-md">
+            <div className="card-body p-5">
+              <h3 className="mb-3 flex items-center gap-2 text-lg font-bold">
+                <CalendarClock className="text-secondary h-6 w-6" /> Today's
+                Classes
+              </h3>
+              {todayClasses.length > 0 ? (
+                <div className="space-y-3">
+                  {todayClasses.map((cls) => (
+                    <div
+                      key={cls.id}
+                      className="border-info bg-base-200/50 flex flex-col gap-1 rounded-r-lg border-l-4 p-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-bold">
+                          {cls.courseCode}
+                        </span>
+                        <span className="badge badge-sm badge-info badge-outline">
+                          {cls.timeSlot}
+                        </span>
+                      </div>
+                      <div className="text-base-content/70 flex justify-between text-xs">
+                        <span>Sem: {cls.semester}</span>
+                        <span>Room: {cls.room}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-base-200/50 rounded-lg py-4 text-center">
+                  <p className="text-base-content/60 text-sm font-medium">
+                    No classes today.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Quick Stats */}
           <div className="grid grid-cols-2 gap-4">
             <div className="card bg-base-100 border-base-200 card-hover border py-6 text-center shadow-sm">

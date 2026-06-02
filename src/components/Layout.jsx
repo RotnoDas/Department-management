@@ -14,6 +14,7 @@ import {
   BookOpen,
   Bell,
   FileText,
+  Calendar,
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -40,6 +41,11 @@ const NAV = {
       icon: <BookOpen className="h-5 w-5" />,
     },
     {
+      to: "/admin/routine",
+      label: "Routine",
+      icon: <Calendar className="h-5 w-5" />,
+    },
+    {
       to: "/admin/notices",
       label: "Notices",
       icon: <Bell className="h-5 w-5" />,
@@ -50,6 +56,11 @@ const NAV = {
       to: "/student/dashboard",
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
+    },
+    {
+      to: "/student/routine",
+      label: "Routine",
+      icon: <Calendar className="h-5 w-5" />,
     },
     {
       to: "/student/attendance",
@@ -72,6 +83,11 @@ const NAV = {
       to: "/teacher/dashboard",
       label: "Dashboard",
       icon: <LayoutDashboard className="h-5 w-5" />,
+    },
+    {
+      to: "/teacher/routine",
+      label: "Routine",
+      icon: <Calendar className="h-5 w-5" />,
     },
     {
       to: "/teacher/assignments",
