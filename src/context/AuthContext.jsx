@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import api from "../api/axios";
+import { queueToast } from "../utils/toast";
 
 const AuthContext = createContext(null);
 
@@ -53,6 +54,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    queueToast({ title: "Signed out successfully.", color: "primary" });
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     setUser(null);

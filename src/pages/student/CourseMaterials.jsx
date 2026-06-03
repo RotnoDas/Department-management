@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import api from "../../api/axios";
-import { addToast } from "@heroui/toast";
+import { addToast } from "../../utils/toast";
 import Loading from "../../components/Loading";
 import {
   File,
@@ -11,6 +11,10 @@ import {
   FileImage,
   FileArchive,
   Download,
+  Calendar,
+  Layers,
+  Sparkles,
+  ExternalLink,
 } from "lucide-react";
 
 export default function StudentCourseMaterials() {
@@ -31,7 +35,10 @@ export default function StudentCourseMaterials() {
       setCourseName(data.courseName);
       setMaterials(data.materials);
     } catch (err) {
-      addToast({ title: "Failed to load materials or unauthorized access.", color: "danger" });
+      addToast({
+        title: "Failed to load materials or unauthorized access.",
+        color: "danger",
+      });
     } finally {
       setLoading(false);
     }
@@ -40,73 +47,81 @@ export default function StudentCourseMaterials() {
   const getFileIcon = (filename) => {
     const ext = filename.split(".").pop().toLowerCase();
     if (["pdf"].includes(ext))
-      return <FileText className="h-8 w-8 text-rose-500" />;
+      return <FileText className="h-6 w-6 text-rose-500" />;
     if (["jpg", "jpeg", "png", "gif"].includes(ext))
-      return <FileImage className="h-8 w-8 text-sky-500" />;
+      return <FileImage className="h-6 w-6 text-sky-500" />;
     if (["zip", "rar"].includes(ext))
-      return <FileArchive className="h-8 w-8 text-amber-500" />;
-    return <File className="h-8 w-8 text-slate-500" />;
+      return <FileArchive className="h-6 w-6 text-amber-500" />;
+    return <File className="h-6 w-6 text-slate-400" />;
   };
 
   const formatDate = (dateString) => {
     const options = {
-      year: "numeric",
       month: "short",
       day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
+      year: "numeric",
     };
     return new Date(dateString).toLocaleDateString("en-US", options);
   };
 
-  if (loading) return <Loading />;
+  if (loading) return <Loading fullScreen text="Loading materials..." />;
 
   return (
-    <div className="page-transition mx-auto max-w-5xl space-y-8 pb-10">
-      {/* Impressive Header matching the Theme */}
-      <div className="card relative overflow-hidden bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 text-white shadow-xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-48 w-48 rounded-full bg-white opacity-10 blur-2xl"></div>
-        <div className="absolute bottom-0 left-10 -mb-10 h-32 w-32 rounded-full bg-violet-400 opacity-20 blur-xl"></div>
-        <div className="card-body relative z-10 p-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+    <div className="page-transition mx-auto max-w-[1400px] space-y-8 pb-12">
+      {/* Premium Header */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-sky-100 via-indigo-50 to-white p-8 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-slate-100">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM2MzY2ZjEiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0YzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6bTAtMTBjMC0yLjIxLTEuNzktNC00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full bg-white/40 blur-3xl"></div>
+
+        <div className="relative z-10 flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="flex items-center gap-6">
             <Link
               to="/student/dashboard"
-              className="btn btn-circle btn-ghost border-0 bg-white/10 text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/20"
-              title="Back to Dashboard"
+              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 hover:text-indigo-600 hover:shadow-md"
+              title="Back"
             >
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-6 w-6" />
             </Link>
             <div className="flex items-center gap-6">
-              <div className="rounded-2xl border border-white/30 bg-white/20 p-4 shadow-inner backdrop-blur-md">
-                <BookCopy className="h-10 w-10 text-white drop-shadow-sm" />
+              <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-white shadow-xl ring-1 ring-slate-100 transition-transform duration-500 hover:rotate-6">
+                <BookCopy className="h-8 w-8 text-indigo-600" />
               </div>
               <div>
-                <h1 className="text-3xl font-extrabold tracking-tight drop-shadow-md">
-                  {courseCode} - {courseName}
+                <h1 className="text-3xl font-black tracking-tight text-slate-800">
+                  {courseCode}
+                  <span className="mx-3 font-light text-slate-300">|</span>
+                  <span className="font-bold text-slate-600">{courseName}</span>
                 </h1>
-                <p className="mt-2 font-medium text-indigo-100">
-                  Access notes, links, and resources shared by your faculty
+                <p className="mt-1 text-sm font-black tracking-widest text-slate-400 uppercase">
+                  Course Materials & Resources
                 </p>
               </div>
+            </div>
+          </div>
+          <div className="hidden lg:block">
+            <div className="rounded-2xl bg-white/60 px-6 py-3 shadow-sm ring-1 ring-slate-200/50 backdrop-blur-sm">
+              <span className="text-[10px] font-black tracking-widest text-indigo-600 uppercase">
+                {materials.length} Resources Available
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white/50 p-6 shadow-sm backdrop-blur-sm lg:p-8">
+      <div className="space-y-6">
         {materials.length === 0 ? (
-          <div className="card group relative overflow-hidden border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm">
-            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-slate-50 to-white"></div>
-            <div className="card-body relative z-10 min-h-[300px] items-center justify-center">
-              <div className="mb-6 rounded-full bg-slate-100 p-5 shadow-inner ring-4 ring-slate-50 transition-all duration-300 group-hover:scale-110">
-                <File className="h-12 w-12 animate-pulse text-indigo-400" />
+          <div className="relative overflow-hidden rounded-[3rem] bg-white/50 p-20 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] ring-1 ring-slate-100 backdrop-blur-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/50 via-transparent to-sky-50/50 opacity-60"></div>
+            <div className="relative z-10 flex flex-col items-center justify-center">
+              <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-indigo-100 to-sky-100 p-6 shadow-inner ring-4 ring-white transition-transform duration-500 hover:scale-110">
+                <File className="h-12 w-12 text-indigo-500" />
               </div>
-              <h3 className="mb-2 text-2xl font-bold text-slate-700">
-                No Resources Yet
+              <h3 className="mb-3 text-3xl font-black tracking-tight text-slate-800">
+                Library is Empty
               </h3>
-              <p className="mx-auto max-w-sm leading-relaxed text-slate-500">
-                Your faculty has not uploaded any materials for this course yet.
-                Check back soon!
+              <p className="mx-auto max-w-sm text-lg leading-relaxed font-bold text-slate-400">
+                No materials have been uploaded for this course yet. Please
+                check back later.
               </p>
             </div>
           </div>
@@ -115,62 +130,57 @@ export default function StudentCourseMaterials() {
             {materials.map((m) => (
               <div
                 key={m.id}
-                className="card group flex flex-col border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="group relative flex flex-col overflow-hidden rounded-[2.5rem] bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-slate-200/50 transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:ring-indigo-100"
               >
-                <div className="h-2 w-full rounded-t-2xl bg-gradient-to-r from-indigo-400 to-sky-500 opacity-80 transition-opacity group-hover:opacity-100"></div>
-                <div className="card-body flex flex-1 flex-col gap-4 p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-xl bg-slate-50 p-3 shadow-inner transition-transform group-hover:scale-110">
-                      {m.filePath ? (
-                        getFileIcon(m.originalName)
-                      ) : (
-                        <FileText className="h-8 w-8 text-indigo-500" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <h3
-                        className="line-clamp-2 text-lg leading-snug font-bold text-slate-800"
-                        title={m.title}
-                      >
-                        {m.title}
-                      </h3>
-                      <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-500">
-                        {m.filePath && (
-                          <>
-                            <span
-                              className="max-w-[120px] truncate rounded bg-slate-100 px-2 py-1"
-                              title={m.originalName}
-                            >
-                              {m.originalName}
-                            </span>
-                            <span>•</span>
-                          </>
+                <div className="relative z-10 flex flex-1 flex-col">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-start gap-5">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-50 ring-1 ring-slate-100 transition-all duration-500 group-hover:bg-indigo-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-indigo-200">
+                        {m.filePath ? (
+                          getFileIcon(m.originalName)
+                        ) : (
+                          <FileText className="h-7 w-7 text-indigo-500 transition-colors group-hover:text-white" />
                         )}
-                        <span className="rounded bg-indigo-50 px-2 py-1 text-indigo-700">
-                          {formatDate(m.createdAt)}
-                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <h2 className="line-clamp-2 text-lg leading-[1.2] font-black tracking-tight text-slate-800 transition-colors group-hover:text-indigo-700">
+                          {m.title}
+                        </h2>
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          <span className="flex items-center gap-1.5 rounded-lg bg-indigo-50 px-2.5 py-1 text-[10px] font-black tracking-widest text-indigo-600 uppercase shadow-sm ring-1 ring-indigo-100/50 transition-all duration-300 group-hover:bg-white">
+                            <Calendar className="h-3.5 w-3.5 opacity-50" />
+                            {formatDate(m.createdAt)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {m.description && (
-                    <div className="mt-2 flex-1 rounded-xl border border-slate-100 bg-slate-50 p-4 text-sm leading-relaxed whitespace-pre-wrap text-slate-600 shadow-inner">
+                    <div className="mt-6 line-clamp-3 rounded-2xl bg-slate-50/50 p-4 text-sm leading-relaxed font-bold text-slate-500/80 ring-1 ring-slate-100/50 transition-colors group-hover:bg-white group-hover:ring-indigo-100/20">
                       {m.description}
                     </div>
                   )}
 
-                  {m.filePath && (
-                    <div className="mt-auto border-t border-slate-100 pt-4">
+                  <div className="mt-auto pt-6">
+                    {m.filePath ? (
                       <a
                         href={`http://localhost:3001${m.filePath}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="btn btn-primary w-full border-0 bg-indigo-600 text-white shadow-md transition-all hover:bg-indigo-700 hover:shadow-lg"
+                        className="group/dl flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 text-sm font-black tracking-widest text-white uppercase shadow-lg transition-all duration-300 hover:-translate-y-1 hover:bg-indigo-600 hover:shadow-indigo-200"
                       >
-                        <Download className="mr-2 h-4 w-4" /> Download File
+                        <Download className="h-4 w-4 transition-transform group-hover/dl:scale-110" />
+                        <span>Download File</span>
                       </a>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-slate-100 bg-slate-50/30">
+                        <span className="text-[10px] font-black tracking-widest text-slate-300 uppercase">
+                          Text Content Only
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             ))}

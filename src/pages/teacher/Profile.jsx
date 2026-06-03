@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import api from "../../api/axios";
+import { addToast } from "../../utils/toast";
 import {
   Pencil,
   Save,
@@ -12,6 +13,9 @@ import {
   Mail,
   BadgeCheck,
   CalendarDays,
+  ShieldCheck,
+  Sparkles,
+  XCircle,
 } from "lucide-react";
 import Loading from "../../components/Loading";
 
@@ -49,10 +53,14 @@ export default function TeacherProfile() {
         officeRoom: form.officeRoom,
       });
       setEditing(false);
-      setMsg("Profile updated successfully!");
+      const message = "Profile updated successfully!";
+      setMsg(message);
+      addToast({ title: message, color: "success" });
       load();
     } catch (err) {
-      setMsg(err.response?.data?.error || "Update failed.");
+      const message = err.response?.data?.error || "Update failed.";
+      setMsg(message);
+      addToast({ title: message, color: "danger" });
     } finally {
       setSaving(false);
     }
@@ -66,246 +74,267 @@ export default function TeacherProfile() {
   });
 
   return (
-    <div className="page-transition mx-auto max-w-4xl space-y-8 pb-10">
-      {/* Impressive Header Banner */}
-      <div className="card relative overflow-hidden bg-gradient-to-br from-sky-500 via-blue-600 to-indigo-700 text-white shadow-xl">
-        <div className="absolute top-0 right-0 -mt-10 -mr-10 h-64 w-64 rounded-full bg-white opacity-10 blur-3xl"></div>
-        <div className="absolute bottom-0 left-10 -mb-10 h-40 w-40 rounded-full bg-sky-300 opacity-20 blur-2xl"></div>
+    <div className="page-transition mx-auto max-w-[1400px] space-y-8 pb-12">
+      {/* Premium Header */}
+      <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-sky-100 via-indigo-50 to-white p-8 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-slate-100">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM2MzY2ZjEiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0YzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6bTAtMTBjMC0yLjIxLTEuNzktNC00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+        <div className="absolute -top-10 -right-10 h-64 w-64 rounded-full bg-white/40 blur-3xl"></div>
 
-        <div className="card-body relative z-10 p-8 sm:p-10">
-          <div className="flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
-            <div className="flex items-center gap-6">
-              <div className="avatar placeholder relative">
-                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white text-blue-600 shadow-2xl ring-4 ring-white/30 backdrop-blur-sm">
-                  <User className="h-12 w-12" />
-                </div>
-                <div className="bg-success absolute right-0 bottom-0 rounded-full border-2 border-white p-1.5 shadow-md">
-                  <BadgeCheck className="h-5 w-5 text-white" />
-                </div>
+        <div className="relative z-10 flex flex-col items-center justify-between gap-8 md:flex-row">
+          <div className="flex items-center gap-8">
+            <div className="group relative">
+              <div className="flex h-24 w-24 items-center justify-center rounded-[2rem] bg-white shadow-2xl ring-1 ring-slate-100 transition-transform duration-500 group-hover:scale-105 group-hover:rotate-6">
+                <User className="h-12 w-12 text-indigo-600" />
               </div>
-              <div>
-                <h1 className="text-3xl font-extrabold tracking-tight drop-shadow-md sm:text-4xl">
-                  {profile?.name}
-                </h1>
-                <p className="mt-2 flex items-center gap-2 font-medium text-blue-100">
-                  <Briefcase className="h-4 w-4" />
-                  {profile?.designation || "Faculty Member"}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="badge border-white/20 bg-white/10 text-white shadow-sm backdrop-blur-md">
-                    ID: {profile?.teacherId || "N/A"}
-                  </span>
-                  <span className="badge border-white/20 bg-white/10 text-white shadow-sm backdrop-blur-md">
-                    Role: {profile?.role?.toUpperCase()}
-                  </span>
-                </div>
+              <div className="absolute -right-1 -bottom-1 flex h-8 w-8 items-center justify-center rounded-xl border-2 border-white bg-emerald-500 text-white shadow-lg transition-transform group-hover:scale-110">
+                <ShieldCheck className="h-5 w-5 font-bold" />
               </div>
+              <Sparkles className="absolute -top-3 -right-3 h-6 w-6 animate-pulse text-yellow-500" />
             </div>
 
-            <div className="sm:self-start">
-              {!editing ? (
-                <button
-                  className="btn border-0 bg-white text-blue-700 shadow-lg transition-transform hover:scale-105 hover:bg-blue-50"
-                  onClick={() => {
-                    setEditing(true);
-                    setMsg("");
-                  }}
-                >
-                  <Pencil className="mr-2 h-4 w-4" /> Edit Profile
-                </button>
-              ) : (
-                <button
-                  className="btn btn-ghost border-white/30 text-white backdrop-blur-sm hover:bg-white/20"
-                  onClick={() => {
-                    setEditing(false);
-                    setForm(profile);
-                    setMsg("");
-                  }}
-                >
-                  <X className="mr-1 h-4 w-4" /> Cancel Edit
-                </button>
-              )}
+            <div>
+              <h1 className="text-4xl font-black tracking-tight text-slate-800">
+                My Profile
+                <span className="mx-3 font-light text-slate-300">|</span>
+                <span className="text-indigo-600">Faculty Account</span>
+              </h1>
+              <p className="mt-1 text-sm font-black tracking-widest text-slate-400 uppercase">
+                Manage your professional identity and contact info
+              </p>
             </div>
+          </div>
+
+          <div className="flex gap-3">
+            {!editing ? (
+              <button
+                className="btn h-12 rounded-2xl border-0 bg-white px-6 text-sm font-black text-indigo-600 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-indigo-600 hover:text-white hover:shadow-xl hover:shadow-indigo-100"
+                onClick={() => {
+                  setEditing(true);
+                  setMsg("");
+                }}
+              >
+                <Pencil className="mr-2 h-4 w-4" /> Edit Profile
+              </button>
+            ) : (
+              <button
+                className="btn h-12 rounded-2xl border-0 bg-rose-50 px-6 text-sm font-black text-rose-600 shadow-sm ring-1 ring-rose-200 transition-all hover:bg-rose-600 hover:text-white"
+                onClick={() => {
+                  setEditing(false);
+                  setForm(profile);
+                  setMsg("");
+                }}
+              >
+                <X className="mr-2 h-4 w-4" /> Cancel
+              </button>
+            )}
           </div>
         </div>
       </div>
 
       {msg && (
         <div
-          className={`alert ${msg.includes("success") ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-red-200 bg-red-50 text-red-700"} border shadow-sm`}
+          className={`alert rounded-3xl ${msg.includes("success") ? "border-emerald-200 bg-emerald-50 text-emerald-700 shadow-emerald-100" : "border-rose-200 bg-rose-50 text-rose-700 shadow-rose-100"} animate-in fade-in slide-in-from-top-4 border-2 shadow-lg transition-all`}
         >
           {msg.includes("success") ? (
-            <BadgeCheck className="h-5 w-5" />
+            <BadgeCheck className="h-6 w-6" />
           ) : (
-            <X className="h-5 w-5" />
+            <XCircle className="h-6 w-6" />
           )}
-          <span>{msg}</span>
+          <span className="font-bold tracking-tight">{msg}</span>
         </div>
       )}
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        {/* Left Column: Contact & Static Info */}
+        {/* Left Column: Account Details */}
         <div className="space-y-6 lg:col-span-1">
-          <div className="card sticky top-24 border border-slate-200 bg-white shadow-md">
-            <div className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-6 py-4">
-              <h3 className="flex items-center gap-2 font-bold text-slate-800">
-                <User className="h-5 w-5 text-sky-500" /> Account Details
-              </h3>
+          <div className="group relative overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-slate-200/60 transition-all duration-300">
+            <div className="mb-8 flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50 text-indigo-600 shadow-inner ring-1 ring-indigo-100">
+                <User className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-xl font-black tracking-tight text-slate-800">
+                  Account
+                </h3>
+                <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                  Core Credentials
+                </p>
+              </div>
             </div>
-            <div className="card-body space-y-6 p-6">
+
+            <div className="space-y-6">
               <StaticRow
-                icon={<Mail className="h-5 w-5 text-slate-400" />}
-                label="Email Address"
+                icon={<Mail className="h-5 w-5 text-indigo-400" />}
+                label="Verified Email"
                 value={profile?.email}
               />
               <StaticRow
-                icon={<BadgeCheck className="h-5 w-5 text-slate-400" />}
-                label="Teacher ID"
+                icon={<BadgeCheck className="h-5 w-5 text-sky-400" />}
+                label="Department ID"
                 value={profile?.teacherId}
               />
               <StaticRow
-                icon={<CalendarDays className="h-5 w-5 text-slate-400" />}
+                icon={<CalendarDays className="h-5 w-5 text-purple-400" />}
                 label="Joining Date"
-                value={profile?.joiningDate}
+                value={
+                  profile?.joiningDate
+                    ? new Date(profile.joiningDate).toLocaleDateString(
+                        "en-US",
+                        { month: "long", day: "numeric", year: "numeric" },
+                      )
+                    : "Not set"
+                }
               />
+            </div>
 
-              <div className="divider my-0"></div>
-
-              <div className="rounded-xl border border-sky-100 bg-sky-50 p-4">
-                <h4 className="mb-1 text-sm font-bold text-sky-800">
-                  Need help?
-                </h4>
-                <p className="text-xs leading-relaxed text-sky-600">
-                  If you need to change your email address or official Teacher
-                  ID, please contact the IT Administrator.
-                </p>
-              </div>
+            <div className="mt-8 rounded-2xl bg-slate-50/50 p-5 ring-1 ring-slate-100/50">
+              <p className="mb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                Security Note
+              </p>
+              <p className="text-xs leading-relaxed font-bold text-slate-500">
+                Email and official ID are managed by the department and cannot
+                be changed here.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Editable Profile Data */}
+        {/* Right Column: Information Pods */}
         <div className="lg:col-span-2">
-          <div className="card border border-slate-200 bg-white shadow-md">
-            <div className="flex items-center justify-between border-b border-slate-100 bg-gradient-to-r from-slate-50 to-white px-6 py-4">
-              <h3 className="flex items-center gap-2 font-bold text-slate-800">
-                <Briefcase className="h-5 w-5 text-blue-500" /> Professional
-                Information
-              </h3>
+          <div className="group relative overflow-hidden rounded-[2.5rem] bg-white p-8 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] ring-1 ring-slate-200/60 transition-all duration-300">
+            <div className="mb-10 flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-inner ring-1 ring-blue-100">
+                  <Briefcase className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black tracking-tight text-slate-800">
+                    Professional
+                  </h3>
+                  <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                    Faculty information
+                  </p>
+                </div>
+              </div>
               {editing && (
-                <span className="badge badge-info badge-sm animate-pulse">
-                  Editing Mode
-                </span>
+                <div className="flex items-center gap-2 rounded-full bg-indigo-50 px-4 py-1.5 ring-1 ring-indigo-100">
+                  <span className="h-2 w-2 animate-pulse rounded-full bg-indigo-600" />
+                  <span className="text-[10px] font-black tracking-widest text-indigo-600 uppercase">
+                    Editing
+                  </span>
+                </div>
               )}
             </div>
 
-            <div className="card-body p-6 lg:p-8">
-              {!editing ? (
-                <div className="grid grid-cols-1 gap-x-6 gap-y-8 md:grid-cols-2">
-                  <DisplayField label="Full Name" value={profile?.name} />
-                  <DisplayField label="Phone Number" value={profile?.phone} />
-                  <DisplayField
-                    label="Current Designation"
-                    value={profile?.designation}
-                  />
-                  <DisplayField
-                    label="Specialization / Research"
-                    value={profile?.specialization}
-                  />
-                  <DisplayField
-                    label="Office Room"
-                    value={profile?.officeRoom}
-                  />
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                    <EditField
-                      label="Full Name"
-                      icon={<User className="h-4 w-4 text-slate-400" />}
-                      required
-                    >
-                      <input
-                        className="input input-bordered w-full bg-slate-50 transition-colors focus:bg-white focus:ring-2 focus:ring-blue-500/20"
-                        required
-                        {...f("name")}
-                      />
-                    </EditField>
-
-                    <EditField
-                      label="Phone Number"
-                      icon={<Phone className="h-4 w-4 text-slate-400" />}
-                    >
-                      <input
-                        className="input input-bordered w-full bg-slate-50 transition-colors focus:bg-white focus:ring-2 focus:ring-blue-500/20"
-                        {...f("phone")}
-                        placeholder="+1 (555) 000-0000"
-                      />
-                    </EditField>
-
-                    <EditField
-                      label="Designation"
-                      icon={<Briefcase className="h-4 w-4 text-slate-400" />}
-                    >
-                      <input
-                        className="input input-bordered w-full bg-slate-50 transition-colors focus:bg-white focus:ring-2 focus:ring-blue-500/20"
-                        {...f("designation")}
-                        placeholder="e.g. Associate Professor"
-                      />
-                    </EditField>
-
-                    <EditField
-                      label="Office Room"
-                      icon={<DoorOpen className="h-4 w-4 text-slate-400" />}
-                    >
-                      <input
-                        className="input input-bordered w-full bg-slate-50 transition-colors focus:bg-white focus:ring-2 focus:ring-blue-500/20"
-                        {...f("officeRoom")}
-                        placeholder="e.g. Room 402, Building B"
-                      />
-                    </EditField>
-                  </div>
-
+            {!editing ? (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <DisplayField label="Full Name" value={profile?.name} />
+                <DisplayField label="Phone Number" value={profile?.phone} />
+                <DisplayField
+                  label="Current Designation"
+                  value={profile?.designation}
+                />
+                <DisplayField label="Office Room" value={profile?.officeRoom} />
+                <DisplayField
+                  label="Specialization & Research"
+                  value={profile?.specialization}
+                  className="md:col-span-2"
+                />
+              </div>
+            ) : (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSave();
+                }}
+                className="space-y-8"
+              >
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <EditField
-                    label="Specialization / Research Area"
-                    icon={<Microscope className="h-4 w-4 text-slate-400" />}
+                    label="Full Name"
+                    icon={<User className="h-4 w-4 text-indigo-400" />}
+                    required
                   >
-                    <textarea
-                      className="textarea textarea-bordered h-24 w-full bg-slate-50 transition-colors focus:bg-white focus:ring-2 focus:ring-blue-500/20"
-                      {...f("specialization")}
-                      placeholder="e.g. Artificial Intelligence, Machine Learning, Data Science"
+                    <input
+                      className="input input-bordered w-full rounded-xl font-bold focus:ring-2 focus:ring-indigo-100"
+                      required
+                      {...f("name")}
                     />
                   </EditField>
 
-                  <div className="mt-8 flex justify-end gap-3 border-t border-slate-100 pt-6">
-                    <button
-                      className="btn btn-ghost hover:bg-slate-100"
-                      onClick={() => {
-                        setEditing(false);
-                        setForm(profile);
-                        setMsg("");
-                      }}
-                      disabled={saving}
-                    >
-                      Discard Changes
-                    </button>
-                    <button
-                      className="btn border-0 bg-blue-600 text-white shadow-md hover:bg-blue-700"
-                      onClick={handleSave}
-                      disabled={saving}
-                    >
-                      {saving ? (
-                        <span className="loading loading-spinner loading-sm" />
-                      ) : (
-                        <Save className="mr-2 h-4 w-4" />
-                      )}
-                      Save Profile
-                    </button>
-                  </div>
+                  <EditField
+                    label="Phone"
+                    icon={<Phone className="h-4 w-4 text-emerald-400" />}
+                  >
+                    <input
+                      className="input input-bordered w-full rounded-xl font-bold focus:ring-2 focus:ring-indigo-100"
+                      {...f("phone")}
+                      placeholder="+880"
+                    />
+                  </EditField>
+
+                  <EditField
+                    label="Designation"
+                    icon={<Briefcase className="h-4 w-4 text-amber-400" />}
+                  >
+                    <input
+                      className="input input-bordered w-full rounded-xl font-bold focus:ring-2 focus:ring-indigo-100"
+                      {...f("designation")}
+                      placeholder="Associate Professor"
+                    />
+                  </EditField>
+
+                  <EditField
+                    label="Office Room"
+                    icon={<DoorOpen className="h-4 w-4 text-sky-400" />}
+                  >
+                    <input
+                      className="input input-bordered w-full rounded-xl font-bold focus:ring-2 focus:ring-indigo-100"
+                      {...f("officeRoom")}
+                      placeholder="CSE-301"
+                    />
+                  </EditField>
                 </div>
-              )}
-            </div>
+
+                <EditField
+                  label="Specialization & Research Areas"
+                  icon={<Microscope className="h-4 w-4 text-purple-400" />}
+                >
+                  <textarea
+                    className="textarea textarea-bordered h-28 w-full rounded-xl font-bold focus:ring-2 focus:ring-indigo-100"
+                    {...f("specialization")}
+                    placeholder="e.g. AI, Machine Learning, Data Science"
+                  />
+                </EditField>
+
+                <div className="mt-10 flex justify-end gap-3 border-t border-slate-50 pt-8">
+                  <button
+                    type="button"
+                    className="btn h-12 rounded-2xl border-0 bg-slate-100 px-8 text-sm font-black text-slate-500 hover:bg-slate-200"
+                    onClick={() => {
+                      setEditing(false);
+                      setForm(profile);
+                    }}
+                    disabled={saving}
+                  >
+                    Discard
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn h-12 rounded-2xl border-0 bg-indigo-600 px-8 text-sm font-black text-white shadow-lg shadow-indigo-100 hover:bg-indigo-700"
+                    disabled={saving}
+                  >
+                    {saving ? (
+                      <span className="loading loading-spinner loading-sm" />
+                    ) : (
+                      <Save className="mr-2 h-4 w-4" />
+                    )}
+                    Update Profile
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       </div>
@@ -313,38 +342,52 @@ export default function TeacherProfile() {
   );
 }
 
-// Helper Components
 const StaticRow = ({ icon, label, value }) => (
-  <div className="flex items-start gap-4">
-    <div className="mt-1">{icon}</div>
-    <div>
-      <p className="mb-1 text-xs font-bold tracking-wider text-slate-400 uppercase">
+  <div className="group/row flex items-start gap-4">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-50 ring-1 ring-slate-100 transition-all duration-300 group-hover/row:bg-white group-hover/row:shadow-sm">
+      {icon}
+    </div>
+    <div className="min-w-0 flex-1">
+      <p className="mb-0.5 text-[10px] font-black tracking-widest text-slate-400 uppercase">
         {label}
       </p>
-      <p className="font-medium text-slate-700">
-        {value || <span className="text-slate-300 italic">Not set</span>}
+      <p className="truncate font-black text-slate-700">
+        {value || (
+          <span className="text-xs font-medium text-slate-300 italic">
+            Not set
+          </span>
+        )}
       </p>
     </div>
   </div>
 );
 
-const DisplayField = ({ label, value }) => (
-  <div>
-    <p className="mb-1.5 text-xs font-bold tracking-wider text-slate-400 uppercase">
+const DisplayField = ({ label, value, className = "" }) => (
+  <div className={`group/field ${className}`}>
+    <p className="mb-2 text-[10px] font-black tracking-widest text-slate-400 uppercase">
       {label}
     </p>
-    <p className="rounded-lg border border-slate-100 bg-slate-50 px-4 py-2.5 font-medium text-slate-800 shadow-inner">
-      {value || <span className="text-slate-400 italic">Not provided</span>}
-    </p>
+    <div className="rounded-2xl border border-slate-100 bg-slate-50/50 px-5 py-4 transition-all duration-300 group-hover/field:bg-white group-hover/field:shadow-md group-hover/field:ring-1 group-hover/field:ring-indigo-100">
+      <p className="font-black text-slate-700">
+        {value || (
+          <span className="text-sm font-medium text-slate-300 italic">
+            Not provided
+          </span>
+        )}
+      </p>
+    </div>
   </div>
 );
 
 const EditField = ({ label, required, icon, children }) => (
   <div className="form-control w-full">
-    <label className="label px-1 py-1">
-      <span className="label-text flex items-center gap-2 font-semibold text-slate-700">
-        {icon} {label}
-        {required && <span className="text-error font-bold">*</span>}
+    <label className="label py-1">
+      <span className="label-text flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-500 uppercase">
+        <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+          {icon}
+        </span>
+        {label}
+        {required && <span className="font-black text-rose-500">*</span>}
       </span>
     </label>
     {children}

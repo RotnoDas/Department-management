@@ -4,11 +4,12 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider, Navigate } from "react-router";
 
 import { HeroUIProvider } from "@heroui/system";
-import { ToastProvider } from "@heroui/toast";
+import { Toast } from "@heroui/react";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Layout from "./components/Layout";
 import PublicLanding from "./pages/PublicLanding";
+import ToastFlash from "./components/ToastFlash";
 
 // Auth pages
 import AdminLogin from "./pages/auth/AdminLogin";
@@ -121,7 +122,8 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <HeroUIProvider>
-      <ToastProvider />
+      <Toast.Provider placement="top end" maxVisibleToasts={4} width={420} />
+      <ToastFlash />
       <AuthProvider>
         <RouterProvider router={router} />
       </AuthProvider>

@@ -15,6 +15,7 @@ import {
   Bell,
   FileText,
   Calendar,
+  ChevronRight,
 } from "lucide-react";
 import Logo from "./Logo";
 
@@ -102,12 +103,6 @@ const NAV = {
   ],
 };
 
-const ROLE_GRADIENT = {
-  admin: "from-indigo-500 to-purple-600 shadow-indigo-500/30",
-  teacher: "from-sky-500 to-blue-600 shadow-sky-500/30",
-  student: "from-blue-500 to-cyan-600 shadow-blue-500/30",
-};
-
 const ROLE_LABEL = {
   admin: "Administrator",
   teacher: "Faculty",
@@ -126,74 +121,100 @@ export default function Layout() {
   const links = NAV[user?.role] || [];
 
   return (
-    <div className="min-h-screen bg-transparent font-sans">
+    <div className="min-h-screen bg-[#f8fafc] font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      {/* Background soft glow accents */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute -top-[10%] -left-[10%] h-[40%] w-[40%] rounded-full bg-indigo-50/50 blur-[120px]"></div>
+        <div className="absolute top-[20%] -right-[5%] h-[30%] w-[30%] rounded-full bg-sky-50/50 blur-[100px]"></div>
+        <div className="absolute -bottom-[10%] left-[20%] h-[35%] w-[35%] rounded-full bg-purple-50/40 blur-[110px]"></div>
+      </div>
+
       {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm transition-opacity lg:hidden"
+          className="fixed inset-0 z-40 bg-slate-950/20 backdrop-blur-md transition-opacity lg:hidden"
           onClick={() => setOpen(false)}
         />
       )}
 
-      <div className="flex min-h-screen">
-        {/* ── Premium Light Sidebar ── */}
+      <div className="relative z-10 flex min-h-screen">
+        {/* ── Side Panel (Sidebar) ── */}
         <aside
-          className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/20 bg-white/60 backdrop-blur-2xl text-slate-800 shadow-2xl transition-transform duration-300 lg:sticky lg:top-0 lg:h-screen ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
+          className={`fixed inset-y-0 left-0 z-50 flex w-80 flex-col bg-white/70 backdrop-blur-3xl transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] lg:sticky lg:top-0 lg:h-screen ${open ? "translate-x-0" : "-translate-x-full"} border-r border-slate-200/50 shadow-[0_0_50px_-12px_rgba(0,0,0,0.05)] lg:translate-x-0`}
         >
-          {/* Brand */}
-          <div className="border-b border-slate-100 bg-white/80 p-6 backdrop-blur">
+          {/* Brand/Logo Section */}
+          <div className="flex h-32 items-end px-8 pb-4">
             <Logo size="md" />
           </div>
 
-          {/* Nav links */}
-          <nav className="custom-scrollbar flex-1 space-y-2 overflow-y-auto p-4">
-            <p className="mb-4 px-4 text-[10px] font-extrabold tracking-[0.2em] text-slate-400 uppercase">
-              Main Navigation
-            </p>
+          {/* Navigation Section */}
+          <nav className="custom-scrollbar flex-1 space-y-1 overflow-y-auto px-6 py-8">
+            <div className="mb-6 flex items-center gap-3 px-4">
+              <div className="h-px flex-1 bg-slate-100"></div>
+              <span className="text-[10px] font-black tracking-[0.3em] text-slate-400 uppercase">
+                Main Menu
+              </span>
+              <div className="h-px flex-1 bg-slate-100"></div>
+            </div>
+
             {links.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
                 onClick={() => setOpen(false)}
                 className={({ isActive }) =>
-                  `group flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all duration-300 ${
+                  `group relative flex items-center gap-4 rounded-2xl px-5 py-3.5 text-sm font-black transition-all duration-500 ${
                     isActive
-                      ? `bg-gradient-to-r ${ROLE_GRADIENT[user?.role] || "from-indigo-500 to-purple-600"} translate-x-1 text-white shadow-lg`
-                      : "text-slate-600 hover:translate-x-1 hover:bg-slate-100 hover:text-slate-900"
+                      ? "bg-white text-indigo-600 shadow-[0_10px_25px_-5px_rgba(79,70,229,0.15)] ring-1 ring-indigo-500/20"
+                      : "text-slate-500 hover:bg-white/50 hover:text-indigo-600"
                   }`
                 }
               >
-                <span
-                  className={`transition-transform duration-300 ${open ? "" : "group-hover:scale-110"}`}
-                >
-                  {link.icon}
-                </span>
-                <span className="tracking-wide">{link.label}</span>
+                {({ isActive }) => (
+                  <>
+                    <span
+                      className={`transition-all duration-500 ${
+                        isActive
+                          ? "scale-110 text-indigo-600"
+                          : "group-hover:scale-110 group-hover:text-indigo-600"
+                      }`}
+                    >
+                      {link.icon}
+                    </span>
+                    <span className="flex-1 tracking-tight">{link.label}</span>
+                    <ChevronRight
+                      className={`h-4 w-4 transition-all duration-500 ${isActive ? "translate-x-0 opacity-100" : "-translate-x-2 opacity-0"}`}
+                    />
+                  </>
+                )}
               </NavLink>
             ))}
           </nav>
 
-          <div className="border-t border-slate-200/50 bg-white/40 p-5">
-            <div className="mb-4 flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-              <div className="avatar placeholder">
-                <div
-                  className={`flex items-center justify-center bg-gradient-to-br ${ROLE_GRADIENT[user?.role]?.replace(/shadow-[a-z0-5/-]+/g, "") || "from-indigo-500 to-purple-600"} h-12 w-12 rounded-xl text-white shadow-md`}
-                >
-                  {ROLE_ICON[user?.role] || <User className="h-6 w-6" />}
+          {/* User Profile Section */}
+          <div className="p-6">
+            <div className="relative overflow-hidden rounded-[2rem] bg-white p-5 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.05)] ring-1 ring-slate-100 transition-all duration-500 hover:shadow-xl">
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="relative">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-100">
+                    {ROLE_ICON[user?.role] || <User className="h-6 w-6" />}
+                  </div>
+                  <div className="absolute -right-1 -bottom-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-500 shadow-sm" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-black tracking-tight text-slate-800">
+                    {user?.name}
+                  </p>
+                  <p className="text-[10px] font-black tracking-widest text-indigo-500 uppercase">
+                    {ROLE_LABEL[user?.role]}
+                  </p>
                 </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-slate-800">
-                  {user?.name}
-                </p>
-                <p className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
-                  {ROLE_LABEL[user?.role]}
-                </p>
-              </div>
             </div>
+
             <button
               onClick={logout}
-              className="group flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white py-3 text-sm font-semibold text-rose-500 transition-all hover:border-rose-200 hover:bg-rose-50 hover:shadow-sm"
+              className="group mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-50 py-3.5 text-xs font-black tracking-widest text-slate-400 uppercase transition-all duration-500 hover:bg-rose-50 hover:text-rose-600 hover:shadow-lg hover:shadow-rose-100"
             >
               <LogOut className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
               Sign Out
@@ -201,35 +222,39 @@ export default function Layout() {
           </div>
         </aside>
 
-        {/* ── Main ── */}
-        <div className="flex min-w-0 flex-1 flex-col bg-transparent">
-          {/* Topbar */}
-          <header className="sticky top-0 z-30 flex h-20 items-center gap-4 border-b border-slate-200 bg-white/80 px-4 shadow-sm backdrop-blur-xl sm:px-8">
+        {/* ── Main Content Area ── */}
+        <div className="flex min-w-0 flex-1 flex-col">
+          {/* Top Navbar */}
+          <header className="sticky top-0 z-30 flex h-[4.5rem] items-center gap-4 px-6 sm:px-10">
+            <div className="absolute inset-x-0 top-0 h-full border-b border-slate-200/40 bg-white/60 backdrop-blur-xl" />
+
             <button
-              className="btn btn-ghost btn-sm btn-circle hover:bg-slate-100 lg:hidden"
+              className="relative z-10 flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 transition-all hover:bg-slate-50 lg:hidden"
               onClick={() => setOpen(!open)}
             >
-              <Menu className="h-5 w-5 text-slate-700" />
+              <Menu className="h-5 w-5" />
             </button>
 
             <div className="flex-1" />
 
-            <div className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-2 shadow-sm">
-              <div
-                className={`badge badge-sm border-0 bg-gradient-to-r font-bold tracking-wider text-white uppercase shadow-sm ${ROLE_GRADIENT[user?.role]?.replace(/shadow-[a-z0-5/-]+/g, "") || "from-indigo-500 to-purple-600"}`}
-              >
-                {ROLE_LABEL[user?.role]}
-              </div>
-              <div className="hidden sm:block">
-                <span className="text-sm font-bold text-slate-700">
+            <div className="relative z-10 flex items-center gap-4 rounded-2xl bg-white/80 px-5 py-2.5 shadow-sm ring-1 ring-slate-200/50 backdrop-blur-md transition-all hover:shadow-md hover:ring-indigo-100">
+              <div className="flex hidden flex-col items-end sm:flex">
+                <span className="text-sm font-black tracking-tight text-slate-800">
                   {user?.name}
                 </span>
+                <span className="text-[9px] leading-none font-black tracking-[0.2em] text-indigo-500 uppercase">
+                  {ROLE_LABEL[user?.role]}
+                </span>
+              </div>
+              <div className="hidden h-8 w-px bg-slate-200 sm:block" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 shadow-inner ring-1 ring-indigo-100">
+                {ROLE_ICON[user?.role] || <User className="h-5 w-5" />}
               </div>
             </div>
           </header>
 
-          {/* Content */}
-          <main className="page-transition flex-1 p-4 sm:p-6 lg:p-8">
+          {/* Page Content */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-10">
             <Outlet />
           </main>
         </div>
