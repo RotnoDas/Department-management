@@ -16,7 +16,10 @@ import Logo from "../../components/Logo";
 export default function AdminLogin() {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({
+    email: "admin@cse.edu",
+    password: "Admin@123",
+  });
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
