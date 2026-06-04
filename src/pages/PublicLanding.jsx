@@ -126,14 +126,8 @@ export default function PublicLanding() {
               </span>
             </div>
 
-            <h1 className="text-6xl leading-[1.05] font-black tracking-tighter text-slate-800 sm:text-7xl xl:text-8xl">
-              One Portal.
-              <br />
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-sky-500 bg-clip-text text-transparent">
-                Complete
-              </span>
-              <br />
-              Department.
+            <h1 className="text-6xl leading-[1.05] font-black tracking-tighter text-black sm:text-7xl xl:text-8xl">
+              Computer Science and Engineering
             </h1>
 
             <p className="max-w-xl text-lg leading-relaxed font-bold text-slate-400">
@@ -182,24 +176,24 @@ export default function PublicLanding() {
                 <HeroCard
                   icon={<Clock className="text-indigo-600" />}
                   label="Smart Routine"
-                  desc="Optimized horizontal master schedule"
+                  desc="Dynamic scheduling for theory and lab classes"
                 />
                 <HeroCard
                   icon={<Users className="text-sky-600" />}
                   label="Member Central"
-                  desc="Pill-shaped user management grids"
+                  desc="Unified student and faculty directory"
                 />
               </div>
               <div className="space-y-6">
                 <HeroCard
                   icon={<Sparkles className="text-yellow-500" />}
-                  label="Premium UI"
-                  desc="Modern minimalist gorgeous aesthetic"
+                  label="Academic Dashboard"
+                  desc="Intuitive dashboard for academic tasks"
                 />
                 <HeroCard
                   icon={<ShieldCheck className="text-purple-600" />}
                   label="Secure Access"
-                  desc="Role-based encrypted login portal"
+                  desc="Role-based access control system"
                 />
               </div>
             </div>
