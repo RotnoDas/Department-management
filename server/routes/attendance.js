@@ -38,6 +38,88 @@ function slotToDate(base, { hours, minutes }) {
   return d;
 }
 
+export function syncMissingSessions(semester) {
+  try {
+    const minCourse = db
+      .prepare("SELECT MIN(created_at) as start FROM courses WHERE semester=?")
+      .get(semester);
+    if (!minCourse || !minCourse.start) return;
+
+    let startDate = new Date(minCourse.start);
+    const now = new Date();
+
+    const diffDays = Math.ceil(
+      Math.abs(now - startDate) / (1000 * 60 * 60 * 24),
+    );
+    if (diffDays > 120) {
+      startDate = new Date(now.getTime() - 120 * 24 * 60 * 60 * 1000);
+    }
+
+    const routines = db
+      .prepare(
+        `SELECT r.course_code, r.day, r.time_slot, c.id as course_id
+         FROM routines r
+         JOIN courses c ON c.course_code = r.course_code
+         WHERE r.semester = ?`,
+      )
+      .all(semester);
+
+    const routinesByDay = {};
+    for (const r of routines) {
+      if (!routinesByDay[r.day]) routinesByDay[r.day] = [];
+      routinesByDay[r.day].push(r);
+    }
+
+    const checkSession = db.prepare(
+      `SELECT 1 FROM attendance_sessions
+       WHERE course_id = ? AND session_date = ? AND start_time = ? AND end_time = ?`,
+    );
+
+    const insertSession = db.prepare(
+      `INSERT INTO attendance_sessions (course_id, session_date, start_time, end_time, status)
+       VALUES (?, ?, ?, ?, 'closed')`,
+    );
+
+    let curr = new Date(startDate);
+    curr.setHours(0, 0, 0, 0);
+
+    db.exec("BEGIN TRANSACTION");
+    while (curr <= now) {
+      const dateStr = curr.toISOString().split("T")[0];
+      const dayName = curr.toLocaleDateString("en-US", { weekday: "long" });
+      const dayRoutines = routinesByDay[dayName] || [];
+
+      for (const r of dayRoutines) {
+        const parsed = parseTimeSlot(r.time_slot);
+        const classStartTime = new Date(curr);
+        classStartTime.setHours(parsed.start.hours, parsed.start.minutes, 0, 0);
+
+        if (classStartTime <= now) {
+          const existing = checkSession.get(
+            r.course_id,
+            dateStr,
+            parsed.startStr,
+            parsed.endStr,
+          );
+          if (!existing) {
+            insertSession.run(
+              r.course_id,
+              dateStr,
+              parsed.startStr,
+              parsed.endStr,
+            );
+          }
+        }
+      }
+      curr.setDate(curr.getDate() + 1);
+    }
+    db.exec("COMMIT");
+  } catch (e) {
+    if (db.inTransaction) db.exec("ROLLBACK");
+    console.error("Failed to sync missing sessions:", e);
+  }
+}
+
 // ── GET /attendance/student/active-sessions ────────────────
 router.get("/student/active-sessions", (req, res) => {
   try {
@@ -273,10 +355,13 @@ router.get("/student/stats", (req, res) => {
       .get(req.user.userId);
     if (!student) return res.status(404).json({ error: "Student not found" });
 
+    // Sync any past sessions that were missed by everyone
+    syncMissingSessions(student.semester);
+
     const stats = db
       .prepare(
-        `SELECT c.course_code as courseCode, c.course_name as courseName,
-                COUNT(DISTINCT ats.id) as totalSessions,
+        `SELECT c.course_code as courseCode, c.course_name as courseName, c.target_sessions as targetSessions,
+                COUNT(DISTINCT ats.id) as conductedSessions,
                 COUNT(DISTINCT ar.id)  as attendedSessions,
                 SUM(CASE WHEN ar.status='present' THEN 1 ELSE 0 END) as presentCount,
                 SUM(CASE WHEN ar.status='late'    THEN 1 ELSE 0 END) as lateCount
@@ -288,13 +373,16 @@ router.get("/student/stats", (req, res) => {
       )
       .all(student.id, student.semester);
 
-    const formattedStats = stats.map((s) => ({
-      ...s,
-      percentage:
-        s.totalSessions > 0
-          ? Math.round((s.attendedSessions / s.totalSessions) * 100)
-          : 0,
-    }));
+    const formattedStats = stats.map((s) => {
+      const total =
+        s.targetSessions !== null ? s.targetSessions : s.conductedSessions;
+      return {
+        ...s,
+        totalSessions: total,
+        percentage:
+          total > 0 ? Math.round((s.attendedSessions / total) * 100) : 0,
+      };
+    });
 
     res.json({ stats: formattedStats });
   } catch (e) {

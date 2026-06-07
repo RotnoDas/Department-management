@@ -43,6 +43,7 @@ import TeacherProfile from "./pages/teacher/Profile";
 import TeacherRoutine from "./pages/teacher/Routine";
 import TeacherCourseMaterials from "./pages/teacher/CourseMaterials";
 import TeacherAssignments from "./pages/teacher/Assignments";
+import TeacherAttendance from "./pages/teacher/Attendance";
 
 const router = createBrowserRouter([
   // ── Public ────────────────────────────────────────────────
@@ -111,6 +112,10 @@ const router = createBrowserRouter([
       {
         path: "/teacher/courses/:courseCode/materials",
         element: <TeacherCourseMaterials />,
+      },
+      {
+        path: "/teacher/courses/:courseCode/attendance",
+        element: <TeacherAttendance />,
       },
     ],
   },

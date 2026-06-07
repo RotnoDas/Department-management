@@ -268,9 +268,12 @@ export default function TeacherDashboard() {
                                 {course.courseName}
                               </h3>
                               <div className="mt-auto flex flex-wrap gap-2 pt-2">
-                                <button className="flex h-10 flex-1 items-center justify-center rounded-xl bg-emerald-50 text-[10px] font-black tracking-widest text-emerald-600 uppercase transition-all hover:bg-emerald-600 hover:text-white hover:shadow-lg">
+                                <Link
+                                  to={`/teacher/courses/${course.courseCode}/attendance?semester=${semester}`}
+                                  className="flex h-10 flex-1 items-center justify-center rounded-xl bg-emerald-50 text-[10px] font-black tracking-widest text-emerald-600 uppercase transition-all hover:bg-emerald-600 hover:text-white hover:shadow-lg"
+                                >
                                   Attendance
-                                </button>
+                                </Link>
                                 <Link
                                   to={`/teacher/courses/${course.courseCode}/materials`}
                                   className="flex h-10 flex-1 items-center justify-center rounded-xl bg-sky-50 text-[10px] font-black tracking-widest text-sky-600 uppercase transition-all hover:bg-sky-600 hover:text-white hover:shadow-lg"

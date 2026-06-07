@@ -3,6 +3,7 @@ import multer from "multer";
 import path from "path";
 import db from "../database/db.js";
 import { verifyToken, requireRole } from "../middleware/auth.js";
+import { syncMissingSessions } from "./attendance.js";
 
 const router = express.Router();
 
@@ -128,6 +129,119 @@ router.get("/assignments", (req, res) => {
   const submissions = db.prepare(submissionsSql).all(...params);
   res.json({ courses, submissions });
 });
+// ── Course Attendance ───────────────────────────────────────
+router.get("/courses/:courseCode/attendance", (req, res) => {
+  const { courseCode } = req.params;
+  const { semester } = req.query;
+
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  // Verify course belongs to teacher
+  const course = db
+    .prepare(
+      "SELECT id, course_name, semester, target_sessions FROM courses WHERE course_code=? AND teacher_id=?",
+    )
+    .get(courseCode, teacher.id);
+
+  if (!course)
+    return res
+      .status(403)
+      .json({ error: "Access denied or course not found." });
+
+  const sem = semester || course.semester;
+
+  // Sync missing sessions for this semester so missed classes show up
+  syncMissingSessions(sem);
+
+  // Get all sessions for this course
+  const sessions = db
+    .prepare(
+      "SELECT id, session_date as sessionDate, start_time as startTime, end_time as endTime FROM attendance_sessions WHERE course_id=? ORDER BY session_date DESC, start_time DESC",
+    )
+    .all(course.id);
+
+  // Get all students in the given semester
+  const students = db
+    .prepare(
+      "SELECT id, name, student_id as roll FROM students WHERE semester=? ORDER BY student_id ASC",
+    )
+    .all(sem);
+
+  // Get all attendance records for these sessions
+  const records = [];
+  if (sessions.length > 0) {
+    const sessionIds = sessions.map((s) => s.id).join(",");
+    const query = `
+      SELECT session_id, student_id, status
+      FROM attendance_records
+      WHERE session_id IN (${sessionIds})
+    `;
+    const fetchedRecords = db.prepare(query).all();
+    records.push(...fetchedRecords);
+  }
+
+  // Map records for easier frontend consumption
+  const attendanceMap = {};
+  records.forEach((r) => {
+    if (!attendanceMap[r.student_id]) attendanceMap[r.student_id] = {};
+    attendanceMap[r.student_id][r.session_id] = r.status;
+  });
+
+  const target =
+    course.target_sessions !== null ? course.target_sessions : sessions.length;
+
+  const attendanceData = students.map((student) => {
+    const studentRecords = attendanceMap[student.id] || {};
+    let presentCount = 0;
+
+    sessions.forEach((session) => {
+      if (studentRecords[session.id] === "present") presentCount++;
+    });
+
+    return {
+      studentId: student.id,
+      name: student.name,
+      roll: student.roll,
+      records: studentRecords,
+      presentCount,
+      percentage: target > 0 ? Math.round((presentCount / target) * 100) : 0,
+    };
+  });
+
+  res.json({
+    courseCode,
+    courseName: course.course_name,
+    semester: sem,
+    targetSessions: course.target_sessions,
+    sessions,
+    attendanceData,
+  });
+});
+
+router.put("/courses/:courseCode/target-sessions", (req, res) => {
+  const { courseCode } = req.params;
+  const { targetSessions } = req.body;
+  const teacher = db
+    .prepare("SELECT id FROM teachers WHERE user_id=?")
+    .get(req.user.userId);
+  if (!teacher) return res.status(404).json({ error: "Teacher not found." });
+
+  const course = db
+    .prepare("SELECT id FROM courses WHERE course_code=? AND teacher_id=?")
+    .get(courseCode, teacher.id);
+  if (!course) return res.status(403).json({ error: "Access denied." });
+
+  db.prepare("UPDATE courses SET target_sessions=? WHERE id=?").run(
+    targetSessions || null,
+    course.id,
+  );
+
+  res.json({ success: true, message: "Target sessions updated successfully." });
+});
+
 // ── Course Materials ───────────────────────────────────────
 router.get("/courses/:courseCode/materials", (req, res) => {
   const { courseCode } = req.params;

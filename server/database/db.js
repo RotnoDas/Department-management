@@ -148,6 +148,11 @@ const ensureColumn = (table, column, definition) => {
   }
 };
 
+ensureColumn(
+  "courses",
+  "target_sessions",
+  "target_sessions INTEGER DEFAULT NULL",
+);
 ensureColumn("notices", "file_path", "file_path TEXT");
 ensureColumn("notices", "original_name", "original_name TEXT");
 ensureColumn("notices", "file_mime", "file_mime TEXT");

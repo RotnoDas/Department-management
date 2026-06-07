@@ -1,18 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import api from "../../api/axios";
 import { addToast } from "../../utils/toast";
+import { useGeolocated } from "react-geolocated";
 import {
   CheckCircle,
   Clock,
-  Library,
   BarChart3,
   MapPin,
   Target,
   Check,
-  X,
   AlertCircle,
   Info,
-  ChevronRight,
   Zap,
 } from "lucide-react";
 import Loading from "../../components/Loading";
@@ -20,73 +18,63 @@ import Loading from "../../components/Loading";
 export default function StudentAttendance() {
   const [activeSessions, setActiveSessions] = useState([]);
   const [stats, setStats] = useState([]);
-  const [todayClasses, setTodayClasses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [marking, setMarking] = useState({});
-  const [location, setLocation] = useState(null);
-  const [locationError, setLocationError] = useState("");
 
-  useEffect(() => {
-    loadData();
-    getLocation();
-    // Refresh every 30 seconds
-    const interval = setInterval(loadData, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  const { coords, isGeolocationAvailable, isGeolocationEnabled, getPosition } =
+    useGeolocated({
+      positionOptions: {
+        enableHighAccuracy: true,
+      },
+      userDecisionTimeout: 5000,
+      suppressLocationOnMount: false,
+    });
 
-  const getLocation = (showToast = false) => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setLocationError("");
-          if (showToast) {
-            addToast({ title: "Location access enabled.", color: "success" });
-          }
-        },
-        (error) => {
-          const message =
-            "Location access denied. Please enable location to mark attendance.";
-          setLocationError(message);
-          if (showToast) addToast({ title: message, color: "warning" });
-          console.error("Location error:", error);
-        },
-      );
-    } else {
-      const message = "Geolocation is not supported by your browser";
-      setLocationError(message);
-      if (showToast) addToast({ title: message, color: "danger" });
-    }
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
-      const today = new Date().toLocaleDateString("en-US", { weekday: "long" });
-      const [sessionsRes, statsRes, todayRes] = await Promise.all([
+      const [sessionsRes, statsRes] = await Promise.all([
         api.get("/attendance/student/active-sessions"),
         api.get("/attendance/student/stats"),
-        api.get(`/student/today-classes?day=${today}`),
       ]);
       setActiveSessions(sessionsRes.data.sessions || []);
       setStats(statsRes.data.stats || []);
-      setTodayClasses(todayRes.data || []);
     } catch (e) {
       console.error(e);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    let interval;
+    const fetchInitial = async () => {
+      await loadData();
+      interval = setInterval(loadData, 30000);
+    };
+    fetchInitial();
+
+    return () => clearInterval(interval);
+  }, [loadData]);
+
+  const handleEnableLocation = () => {
+    getPosition();
+    addToast({ title: "Requesting location access...", color: "info" });
   };
 
   const markAttendance = async (sessionId) => {
-    if (!location) {
+    if (!isGeolocationAvailable) {
+      addToast({
+        title: "Geolocation is not supported by your browser.",
+        color: "danger",
+      });
+      return;
+    }
+    if (!isGeolocationEnabled || !coords) {
       addToast({
         title: "Please enable location access to mark attendance.",
         color: "warning",
       });
-      getLocation(true);
+      getPosition();
       return;
     }
 
@@ -94,8 +82,8 @@ export default function StudentAttendance() {
     try {
       const res = await api.post("/attendance/student/mark", {
         sessionId,
-        latitude: location.latitude,
-        longitude: location.longitude,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
       });
 
       addToast({
@@ -150,30 +138,45 @@ export default function StudentAttendance() {
 
       {/* Info Messages */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        {locationError ? (
+        {!isGeolocationAvailable ? (
+          <div className="flex items-center gap-3 rounded-2xl border-2 border-rose-100 bg-rose-50 p-4 text-rose-800 shadow-sm">
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <p className="text-sm font-bold tracking-tight">
+              Your browser does not support Geolocation.
+            </p>
+          </div>
+        ) : !isGeolocationEnabled ? (
           <div className="flex items-center justify-between rounded-2xl border-2 border-amber-100 bg-amber-50 p-4 text-amber-800 shadow-sm">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5 shrink-0" />
               <p className="text-sm font-bold tracking-tight">
-                {locationError}
+                Location access denied. Please enable location to mark
+                attendance.
               </p>
             </div>
             <button
               className="btn btn-sm rounded-xl border-0 bg-white text-amber-600 shadow-sm transition-all hover:bg-amber-600 hover:text-white"
-              onClick={() => getLocation(true)}
+              onClick={handleEnableLocation}
             >
               Enable
             </button>
           </div>
-        ) : (
-          location && (
-            <div className="flex items-center gap-3 rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-4 text-emerald-800 shadow-sm">
-              <CheckCircle className="h-5 w-5 shrink-0" />
+        ) : !coords ? (
+          <div className="flex items-center justify-between rounded-2xl border-2 border-sky-100 bg-sky-50 p-4 text-sky-800 shadow-sm">
+            <div className="flex items-center gap-3">
+              <span className="loading loading-spinner loading-sm" />
               <p className="text-sm font-bold tracking-tight">
-                Location enabled — Ready to mark attendance
+                Fetching your location...
               </p>
             </div>
-          )
+          </div>
+        ) : (
+          <div className="flex items-center gap-3 rounded-2xl border-2 border-emerald-100 bg-emerald-50 p-4 text-emerald-800 shadow-sm">
+            <CheckCircle className="h-5 w-5 shrink-0" />
+            <p className="text-sm font-bold tracking-tight">
+              Location enabled — Ready to mark attendance
+            </p>
+          </div>
         )}
         <div className="flex items-center gap-3 rounded-2xl border-2 border-indigo-100 bg-indigo-50 p-4 text-indigo-800 shadow-sm">
           <Info className="h-5 w-5 shrink-0" />
