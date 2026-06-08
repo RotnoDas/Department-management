@@ -1,157 +1,183 @@
 # CSE Department Management System
 
-A comprehensive management system for Computer Science & Engineering (CSE) Department to manage students, teachers, employees, and administrative tasks.
+A highly detailed, comprehensive, and modern single-department management system built specifically for a Computer Science & Engineering (CSE) Department. This system efficiently manages students, teachers, employees, and administrative tasks under one unified platform.
 
-## 🎯 Overview
+---
 
-This system manages a **single CSE department** with four user roles:
+## 💻 Tech Stack
 
-- **Students** - Can register and manage their profiles after admin approval
-- **Teachers** - Faculty members with profile management
-- **Employees** - Non-teaching staff members
-- **Admin** - Department administrators with full control
+### Frontend
+*   **Framework:** React 19 powered by Vite
+*   **Routing:** React Router v7
+*   **Styling:** Tailwind CSS v4, DaisyUI, and HeroUI
+*   **Data Fetching:** Axios
+*   **Charts & Visualization:** Recharts
+*   **Icons:** Lucide React
+*   **Animations:** Framer Motion
 
-## 🔄 Student Registration Workflow
+### Backend
+*   **Runtime:** Node.js (v22+)
+*   **Framework:** Express.js
+*   **Database:** SQLite (embedded, zero-config)
+*   **Authentication:** JSON Web Tokens (JWT) & bcryptjs
+*   **Session Management:** express-session & cookie-parser
+*   **File Uploads:** Multer
 
-1. **Student Signs Up** - New students register via signup form or Google OAuth
-2. **Pending Approval** - Student data appears in admin panel with "pending" status
-3. **Admin Reviews** - Admin can approve or reject the student registration
-4. **Student Login** - After approval, student can login and access their dashboard
+---
 
-## 🛠️ Tech Stack
+## 🎯 Core System Logic & Functionality
 
-**Frontend:**
+This application provides strict role-based access control, dedicated portals for different users, and complex workflows for academic management including **smart geolocation-based attendance**.
 
-- React 19 + Vite
-- React Router v7
-- Tailwind CSS 4 + DaisyUI
-- Recharts (for charts)
-- Axios
+### 👥 User Roles & Capabilities
 
-**Backend:**
+1. **Student (👨‍🎓)**
+   - **Registration:** Can sign up via an email/password form.
+   - **Approval Logic:** All new student accounts default to a `PENDING` state. They cannot log in until an Administrator approves their account.
+   - **Dashboard & Features:** Once approved, students can view their academic routines, access course materials, submit assignments, and track their attendance.
+   - **Smart Attendance:** Students can mark their presence for active classes using their browser's geolocation.
 
-- Node.js + Express
-- SQLite Database (Node.js built-in)
-- JWT Authentication
-- Passport.js (Google OAuth)
-- bcryptjs (Password hashing)
+2. **Teacher (👨‍🏫)**
+   - **Account Creation:** Created strictly by the Admin.
+   - **Dashboard & Features:** Teachers can manage their profiles, view their teaching schedules, upload course materials, and oversee student attendance and assignment submissions.
 
-## 🚀 Getting Started
+3. **Employee (👷)**
+   - **Account Creation:** Created strictly by the Admin.
+   - **Dashboard & Features:** Non-teaching staff members can view and manage their institutional profiles and administrative tasks.
+
+4. **Admin (🔐)**
+   - **Control:** Full access to all department data.
+   - **Management:** Approve or reject pending student registrations, manage the teacher and employee directories, and view high-level department statistics and data visualizations (charts).
+
+### 📍 Smart Geolocation Attendance Logic
+The system implements a strictly enforced, location-based attendance system:
+- **Time Window:** Students can only give attendance within a strict **15-minute window** from the class start time.
+- **Location Validation:** The system utilizes the **Haversine formula** to calculate the distance between the student's current GPS coordinates and the designated classroom locations.
+- **Geofencing Rule:** Students **must be within a 20-meter radius** of the designated coordinates (`24.01296, 89.280835` or `24.841355, 89.381426`). If they are outside this radius, the system explicitly rejects the submission and displays their distance from the classroom.
+
+---
+
+## 🔄 Core Workflows
+
+### Student Registration & Approval Workflow
+```text
+1. STUDENT SIGNS UP (Status: PENDING)
+     ↓
+2. APPEARS IN ADMIN PANEL ("Pending Registrations" queue)
+     ↓
+3. ADMIN REVIEWS & DECIDES
+     ├─► Click "Approve" → Status: APPROVED → Student can login
+     └─► Click "Reject"  → Status: REJECTED → Login denied
+```
+
+---
+
+## 📦 NPM Packages Used
+
+The system is built as a monolithic repository using Vite (Frontend) and Express (Backend), running concurrently. Below is the detailed breakdown of the packages powering the logic:
+
+### Dependencies (Production)
+*   **`@heroui/react`, `@heroui/system`, `@heroui/theme`, `@heroui/toast`**: Powers the UI components, modern layout styling, theme variables, and flash notifications (toasts).
+*   **`@tailwindcss/vite`**: Vite integration for Tailwind CSS v4, enabling rapid, utility-first styling.
+*   **`axios`**: Promise-based HTTP client used on the frontend to make requests to the Express backend.
+*   **`bcryptjs`**: Used on the backend to securely hash and salt user passwords before storing them in the database.
+*   **`cookie-parser`**: Express middleware to parse HTTP request cookies, essential for session management.
+*   **`cors`**: Express middleware enabling Cross-Origin Resource Sharing so the React frontend can securely communicate with the API.
+*   **`dotenv`**: Loads environment variables from the `.env` file into `process.env`.
+*   **`express`**: Fast, unopinionated web framework for Node.js serving the API endpoints.
+*   **`express-session`**: Manages user sessions in Express for stateless HTTP protocols.
+*   **`framer-motion`**: Used for smooth, physics-based UI animations and page transitions on the frontend.
+*   **`jsonwebtoken` (JWT)**: Generates and verifies secure access tokens for authentication and protected routes.
+*   **`lucide-react`**: Provides crisp, customizable SVG icons used throughout the UI.
+*   **`multer`**: Node.js middleware for handling `multipart/form-data`, primarily used for uploading assignments, course materials, and profile pictures.
+*   **`react` & `react-dom`**: The core library and DOM renderer for building the user interface.
+*   **`react-geolocated`**: A React hook providing access to the HTML5 Geolocation API. Used to get the student's `latitude` and `longitude` for attendance.
+*   **`react-router`**: Handles client-side routing, enabling navigation between the dashboard, login pages, and nested views without page reloads.
+*   **`recharts`**: A composable charting library built on React components, used in the Admin dashboard for data visualization.
+*   **`tailwindcss`**: Utility-first CSS framework for custom, responsive styling.
+
+### DevDependencies (Development)
+*   **`concurrently`**: Allows running the Vite frontend server and Express backend server simultaneously using a single command (`npm run dev`).
+*   **`daisyui`**: A plugin for Tailwind CSS providing pre-built, highly customizable component classes (buttons, cards, inputs).
+*   **`eslint`, `@eslint/js`, `eslint-plugin-*`**: Linting tools configured to enforce code quality, catch syntax errors, and enforce React hooks rules.
+*   **`prettier`, `prettier-plugin-tailwindcss`**: Code formatter that ensures consistent code style and automatically sorts Tailwind utility classes.
+*   **`vite`, `@vitejs/plugin-react`**: Next-generation frontend build tool and development server providing extremely fast Hot Module Replacement (HMR).
+*   **`@types/react`, `@types/react-dom`, `globals`**: TypeScript definitions and environment globals to aid IDE intellisense.
+
+---
+
+## 🗄️ Database Architecture
+
+The backend utilizes **SQLite** for a lightweight, zero-configuration database, entirely embedded within the Node.js application.
+
+*   **`users`**: Core auth table (`email`, `password`, `role`, `status`).
+*   **`students`**: Academic profile (`student_id`, `batch`, `semester`, `cgpa`).
+*   **`teachers`**: Faculty profile (`teacher_id`, `designation`, `specialization`).
+*   **`employees`**: Staff profile (`employee_id`, `designation`, `section`).
+*   **`courses` & `routines`**: Academic schedules, classes, and assigned coordinates.
+*   **`attendance_sessions` & `attendance_records`**: Tracks when a class opens for attendance and precisely logs the student's location when marked.
+*   **`notices`**: General announcements and uploaded files.
+
+---
+
+## 🚀 Installation & Quick Start
 
 ### Prerequisites
+*   Node.js (v22 or later recommended for built-in SQLite features)
 
-- Node.js v22+ (for built-in SQLite support)
+### Setup Instructions
 
-### Installation
+1.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-```bash
-# Install dependencies
-npm install
+2.  **Environment Variables:**
+    Ensure you have a `.env` file at the root. (Copy from a template if needed):
+    ```env
+    PORT=3001
+    JWT_SECRET=your_jwt_secret
+    SESSION_SECRET=your_session_secret
+    FRONTEND_URL=http://localhost:5173
+    ```
 
-# Seed database with demo data
-npm run seed
+3.  **Seed the Database:**
+    Populate the SQLite database with initial demo data (Admin, Teachers, demo courses).
+    ```bash
+    npm run seed
+    ```
 
-# Run development server (frontend + backend)
-npm run dev
-```
+4.  **Start the Application:**
+    This command uses `concurrently` to launch both the Vite frontend and the Express backend.
+    ```bash
+    npm run dev
+    ```
 
-The application will be available at:
+### Access Points
+*   **Frontend Web App**: `http://localhost:5173`
+*   **Backend API**: `http://localhost:3001`
 
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:3001
+---
 
-## 📝 Demo Credentials
+## 🔑 Demo Credentials
 
-After running `npm run seed`, you can login with:
+If you ran `npm run seed`, you can instantly log in with:
 
-| Role     | Email                       | Password     | Status   |
-| -------- | --------------------------- | ------------ | -------- |
-| Admin    | admin@cse.edu               | Admin@123    | -        |
-| Teacher  | john.smith@cse.edu          | Teacher@123  | -        |
-| Employee | mike.wilson@cse.edu         | Employee@123 | -        |
-| Student  | alice.chen@student.cse.edu  | Student@123  | Approved |
-| Student  | carol.davis@student.cse.edu | Student@123  | Pending  |
+| Role     | Email                       | Password     | Status      |
+| -------- | --------------------------- | ------------ | ----------- |
+| Admin    | admin@cse.edu               | Admin@123    | N/A         |
+| Teacher  | john.smith@cse.edu          | Teacher@123  | N/A         |
+| Student  | alice.chen@student.cse.edu  | Student@123  | ✅ Approved |
+| Student  | carol.davis@student.cse.edu | Student@123  | ⏳ Pending  |
 
-## 📦 Available Scripts
+---
 
-```bash
-npm run dev              # Run both frontend & backend
-npm run dev:frontend     # Run frontend only
-npm run dev:backend      # Run backend only
-npm run seed             # Populate database with demo data
-npm run build            # Build for production
-npm run lint             # Run ESLint
-```
+## 🛡️ Security Features
 
-## 🔐 Authentication
-
-- **Email/Password** - Traditional login
-- **Google OAuth** - Social login (requires Google API credentials in `.env`)
-
-## 📊 Features
-
-### Admin Panel
-
-- Dashboard with statistics and charts
-- View all pending student registrations
-- Approve or reject student applications
-- Manage teachers (add, edit, delete)
-- Manage employees (add, edit, delete)
-- Manage students (view, delete)
-
-### Student Portal
-
-- Self-registration
-- Profile management (personal info, academic details)
-- Dashboard with academic information
-- Status-based access control
-
-### Teacher Portal
-
-- Profile management
-- Dashboard with faculty information
-
-### Employee Portal
-
-- Profile management
-- Dashboard with staff information
-
-## 🗄️ Database Schema
-
-The SQLite database includes:
-
-- `users` - Authentication and role management
-- `students` - Student-specific data
-- `teachers` - Faculty data
-- `employees` - Staff data
-- `admins` - Administrator data
-
-## 🔧 Configuration
-
-Copy `.env` file and update with your credentials:
-
-- `JWT_SECRET` - Secret key for JWT tokens
-- `GOOGLE_CLIENT_ID` - Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET` - Google OAuth client secret
-- `FRONTEND_URL` - Frontend URL (default: http://localhost:5173)
-
-## 📱 Responsive Design
-
-The application is fully responsive and works on:
-
-- Desktop computers
-- Tablets
-- Mobile devices
-
-## 🎨 UI Components
-
-- Role-based navigation sidebar
-- Color-coded role badges
-- Modal dialogs for CRUD operations
-- Loading states and error handling
-- Charts and data visualization
-- Toast notifications
+*   **Authentication Validation**: JWT strictly enforces role access (e.g., a Teacher token cannot access Admin routes).
+*   **Password Hashing**: `bcryptjs` is used to prevent raw passwords from being exposed in the database.
+*   **File Upload Safety**: `multer` configuration manages allowed mime-types and restricts file upload sizes.
+*   **Strict Geofencing**: Server-side mathematical validation (Haversine) strictly rejects manipulated or distant geolocation data during attendance submission.
 
 ## 📄 License
-
-This project is for educational purposes.
+This project was built for educational purposes.
