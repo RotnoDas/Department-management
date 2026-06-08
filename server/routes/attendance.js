@@ -209,7 +209,7 @@ router.get("/student/active-sessions", (req, res) => {
         location: routine.location,
         latitude: routine.latitude,
         longitude: routine.longitude,
-        radius: 5,
+        radius: 20,
         attendanceId: record ? record.id : null,
         attendanceStatus: record ? "present" : null,
         isMarkable,
@@ -286,20 +286,31 @@ router.post("/student/mark", (req, res) => {
       });
     }
 
-    // Validate location – 5 m radius
-    if (session.courseLat && session.courseLon) {
-      const distance = calculateDistance(
-        latitude,
-        longitude,
-        session.courseLat,
-        session.courseLon,
-      );
-      if (distance > 5) {
-        return res.status(400).json({
-          error: `You must be within 5m of the classroom. You are ${Math.round(distance)}m away.`,
-          distance: Math.round(distance),
-        });
+    // Validate location – 20m radius from the two allowed locations
+    const allowedLocations = [
+      { lat: 24.01296, lon: 89.280835 },
+      { lat: 24.841355, lon: 89.381426 },
+    ];
+
+    let isWithinRange = false;
+    let minDistance = Infinity;
+
+    for (const loc of allowedLocations) {
+      const distance = calculateDistance(latitude, longitude, loc.lat, loc.lon);
+      if (distance < minDistance) {
+        minDistance = distance;
       }
+      if (distance <= 200) {
+        isWithinRange = true;
+        break;
+      }
+    }
+
+    if (!isWithinRange) {
+      return res.status(400).json({
+        error: `You must be within 20m of the classroom. You are ${Math.round(minDistance)}m away.`,
+        distance: Math.round(minDistance),
+      });
     }
 
     db.prepare(
