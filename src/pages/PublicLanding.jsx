@@ -56,19 +56,21 @@ export default function PublicLanding() {
 
   useEffect(() => {
     if (loading || !user) return;
-    if (user.role === "admin")
-      return navigate("/admin/dashboard", { replace: true });
-    if (user.role === "teacher" && user.status === "approved")
-      return navigate("/teacher/dashboard", { replace: true });
-    if (user.role === "student" && user.status === "approved")
-      return navigate("/student/dashboard", { replace: true });
-    if (["student", "teacher"].includes(user.role) && user.status === "pending")
-      return navigate("/pending", { replace: true });
-    if (
+    
+    if (user.role === "admin") {
+      navigate("/admin/dashboard", { replace: true });
+    } else if (user.role === "teacher" && user.status === "approved") {
+      navigate("/teacher/dashboard", { replace: true });
+    } else if (user.role === "student" && user.status === "approved") {
+      navigate("/student/dashboard", { replace: true });
+    } else if (["student", "teacher"].includes(user.role) && user.status === "pending") {
+      navigate("/pending", { replace: true });
+    } else if (
       ["student", "teacher"].includes(user.role) &&
       user.status === "rejected"
-    )
+    ) {
       navigate("/rejected", { replace: true });
+    }
   }, [loading, navigate, user]);
 
   if (loading) {
